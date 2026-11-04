@@ -1,0 +1,38 @@
+{
+  "name": "Assistant",
+  "short_name": "Assistant",
+  "description": "Assistant is an offline AI app. Download a model once, then chat with no internet. Developed by Jian Ray Pairat.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0c0e16",
+  "theme_color": "#0c0e16",
+  "lang": "en-PH",
+  "dir": "ltr",
+  "categories": [
+    "productivity",
+    "education",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

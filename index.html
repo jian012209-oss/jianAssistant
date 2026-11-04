@@ -1,0 +1,3628 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<title>Assistant</title>
+<meta name="description" content="Assistant is an offline AI app. Download a model once, then chat with no internet. Developed by Jian Ray Pairat.">
+<meta name="author" content="Jian Ray Pairat">
+<meta name="theme-color" content="#0c0e16">
+<meta name="application-name" content="Assistant">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Assistant">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 3.5C36.6 10.4 45 16.6 45 26.2C45 32.6 39.3 36.5 32 36.5C24.7 36.5 19 32.6 19 26.2C19 20.6 22.3 16.9 25.4 13.4C25.9 17.6 27.7 19.8 30 20.8C29 14.8 29.7 8.8 32 3.5Z' fill='%23ff7a26'/%3E%3Cpath d='M32.4 15.2C35.3 19.6 38.6 22.7 38.6 27.4C38.6 31.4 35.7 34 32 34C28.3 34 25.4 31.4 25.4 27.7C25.4 24.7 27.4 22.6 29 21C29.4 23.6 30.4 24.9 31.7 25.5C31 21.8 31.2 18.3 32.4 15.2Z' fill='%23ffe08a'/%3E%3Crect x='25.5' y='37' width='13' height='24' rx='3' fill='%23d9b56b'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" crossorigin="anonymous" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=JetBrains+Mono:wght@400..700&family=Plus+Jakarta+Sans:wght@400..800&display=swap">
+<style>
+/* Layout: a one-column pocket app. Tab bar on phones, side rail on wide screens.
+   The bamboo torch is the only loud element; everything else stays quiet night-blue. */
+:root {
+  --bg: #0c0e16;            /* gabi: night */
+  --surface: #131624;
+  --surface-2: #1a1e30;
+  --surface-3: #232840;
+  --line: #2a3049;
+  --ink: #f4efe7;           /* candle-lit paper */
+  --ink-2: #b9b7c6;
+  --ink-3: #80839a;
+  --flame: #ffb23e;         /* torch light */
+  --ember: #ff6a2b;
+  --accent-text: #ffbf5e;
+  --on-flame: #1d1305;
+  --flame-soft: rgba(255, 178, 62, 0.13);
+  --flame-line: rgba(255, 178, 62, 0.45);
+  --bamboo: #d9b56b;
+  --ok: #4fd8a0;
+  --ok-soft: rgba(79, 216, 160, 0.13);
+  --warn: #ffcf66;
+  --warn-soft: rgba(255, 207, 102, 0.13);
+  --risk: #ff7a7a;
+  --risk-soft: rgba(255, 122, 122, 0.13);
+  --scrim: rgba(4, 5, 10, 0.62);
+  --shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  --glow: rgba(255, 160, 50, 0.32);
+
+  --font-display: "Bricolage Grotesque", "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-body: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.845rem;
+  --fs-md: 0.94rem;
+  --fs-lg: 1.06rem;
+  --fs-xl: 1.32rem;
+  --fs-2xl: 1.75rem;
+  --fs-3xl: 2.15rem;
+
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 22px;
+  --r-pill: 999px;
+
+  --gutter-l: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f2f3f7;
+    --surface: #ffffff;
+    --surface-2: #eceef4;
+    --surface-3: #e1e4ed;
+    --line: #d6dae5;
+    --ink: #141726;
+    --ink-2: #474c61;
+    --ink-3: #6f7489;
+    --flame: #ffad33;
+    --ember: #e8561c;
+    --accent-text: #a45400;
+    --on-flame: #1d1305;
+    --flame-soft: rgba(242, 146, 20, 0.13);
+    --flame-line: rgba(214, 120, 0, 0.45);
+    --bamboo: #b48a3c;
+    --ok: #12855a;
+    --ok-soft: rgba(18, 133, 90, 0.1);
+    --warn: #9a6200;
+    --warn-soft: rgba(214, 150, 0, 0.13);
+    --risk: #c23434;
+    --risk-soft: rgba(194, 52, 52, 0.09);
+    --scrim: rgba(20, 23, 38, 0.45);
+    --shadow: 0 18px 40px rgba(20, 23, 38, 0.16);
+    --glow: rgba(255, 150, 30, 0.26);
+    color-scheme: light;
+  }
+}
+
+:root[data-theme="light"] {
+  --bg: #f2f3f7;
+  --surface: #ffffff;
+  --surface-2: #eceef4;
+  --surface-3: #e1e4ed;
+  --line: #d6dae5;
+  --ink: #141726;
+  --ink-2: #474c61;
+  --ink-3: #6f7489;
+  --flame: #ffad33;
+  --ember: #e8561c;
+  --accent-text: #a45400;
+  --on-flame: #1d1305;
+  --flame-soft: rgba(242, 146, 20, 0.13);
+  --flame-line: rgba(214, 120, 0, 0.45);
+  --bamboo: #b48a3c;
+  --ok: #12855a;
+  --ok-soft: rgba(18, 133, 90, 0.1);
+  --warn: #9a6200;
+  --warn-soft: rgba(214, 150, 0, 0.13);
+  --risk: #c23434;
+  --risk-soft: rgba(194, 52, 52, 0.09);
+  --scrim: rgba(20, 23, 38, 0.45);
+  --shadow: 0 18px 40px rgba(20, 23, 38, 0.16);
+  --glow: rgba(255, 150, 30, 0.26);
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --bg: #0c0e16;
+  --surface: #131624;
+  --surface-2: #1a1e30;
+  --surface-3: #232840;
+  --line: #2a3049;
+  --ink: #f4efe7;
+  --ink-2: #b9b7c6;
+  --ink-3: #80839a;
+  --flame: #ffb23e;
+  --ember: #ff6a2b;
+  --accent-text: #ffbf5e;
+  --on-flame: #1d1305;
+  --flame-soft: rgba(255, 178, 62, 0.13);
+  --flame-line: rgba(255, 178, 62, 0.45);
+  --bamboo: #d9b56b;
+  --ok: #4fd8a0;
+  --ok-soft: rgba(79, 216, 160, 0.13);
+  --warn: #ffcf66;
+  --warn-soft: rgba(255, 207, 102, 0.13);
+  --risk: #ff7a7a;
+  --risk-soft: rgba(255, 122, 122, 0.13);
+  --scrim: rgba(4, 5, 10, 0.62);
+  --shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  --glow: rgba(255, 160, 50, 0.32);
+  color-scheme: dark;
+}
+
+/* ---------- base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { height: 100%; box-sizing: border-box; -webkit-text-size-adjust: 100%; }
+body {
+  height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
+}
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: var(--accent-text); }
+h1, h2, h3, h4 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+svg { flex: none; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+:focus-visible { outline: 2px solid var(--flame); outline-offset: 2px; }
+.icon { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.icon.sm { width: 16px; height: 16px; }
+.icon.lg { width: 24px; height: 24px; }
+
+/* ---------- app shell ---------- */
+.app {
+  height: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas: "banner" "main" "tabbar";
+}
+.preview-banner { grid-area: banner; }
+.rail { grid-area: rail; display: none; }
+.tabbar { grid-area: tabbar; }
+.main { grid-area: main; position: relative; min-height: 0; min-width: 0; }
+.screen { position: absolute; inset: 0; display: none; flex-direction: column; min-height: 0; }
+.screen.is-active { display: flex; }
+.screen-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scroll-behavior: smooth; }
+.screen-inner {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding-left: var(--gutter-l);
+  padding-right: var(--gutter-r);
+  padding-block: 18px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.preview-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-block: 7px;
+  padding-left: var(--gutter-l);
+  padding-right: var(--gutter-r);
+  background: var(--flame-soft);
+  color: var(--accent-text);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  border-bottom: 1px solid var(--flame-line);
+}
+
+/* tab bar */
+.tabbar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  padding-left: var(--gutter-l);
+  padding-right: var(--gutter-r);
+  padding-top: 6px;
+  padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+}
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 0;
+  background: none;
+  border: 0;
+  color: var(--ink-3);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.tab .tab-ico {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 30px;
+  border-radius: var(--r-pill);
+  transition: background 0.2s ease;
+}
+.tab[aria-current="page"] { color: var(--accent-text); }
+.tab[aria-current="page"] .tab-ico { background: var(--flame-soft); }
+.tab .badge-dot { position: relative; }
+
+/* ---------- brand ---------- */
+.torch { display: block; overflow: visible; }
+.torch .glow { opacity: 0.9; transform-origin: 32px 24px; }
+.torch .flame-group { transform-origin: 32px 36px; }
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-size: 1.28rem;
+  line-height: 1;
+}
+.wordmark small {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  margin-left: 6px;
+}
+
+.is-thinking .flame-group { animation: flicker 0.9s ease-in-out infinite; }
+.is-thinking .glow { animation: glowpulse 1.6s ease-in-out infinite; }
+.is-idle .glow { animation: glowpulse 4.5s ease-in-out infinite; }
+@keyframes flicker {
+  0%, 100% { transform: scale(1, 1) skewX(0deg); }
+  25% { transform: scale(0.97, 1.05) skewX(-2deg); }
+  50% { transform: scale(1.03, 0.97) skewX(1.5deg); }
+  75% { transform: scale(0.99, 1.03) skewX(-1deg); }
+}
+@keyframes glowpulse {
+  0%, 100% { opacity: 0.65; transform: scale(0.94); }
+  50% { opacity: 1; transform: scale(1.06); }
+}
+
+/* ---------- chat screen ---------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: var(--gutter-l);
+  padding-right: var(--gutter-r);
+  padding-block: 10px 6px;
+}
+.brand-inline { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
+.brand-inline .torch { width: 30px; height: 30px; }
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px 3px 8px;
+  border-radius: var(--r-pill);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  background: var(--surface-2);
+  color: var(--ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.status-pill::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ink-3);
+  flex: none;
+}
+.status-pill[data-tone="ok"] { background: var(--ok-soft); color: var(--ok); }
+.status-pill[data-tone="ok"]::before { background: var(--ok); box-shadow: 0 0 0 3px var(--ok-soft); }
+.status-pill[data-tone="busy"] { background: var(--flame-soft); color: var(--accent-text); }
+.status-pill[data-tone="busy"]::before { background: var(--flame); animation: blink 1s ease-in-out infinite; }
+.status-pill[data-tone="warn"] { background: var(--warn-soft); color: var(--warn); }
+.status-pill[data-tone="warn"]::before { background: var(--warn); }
+@keyframes blink { 50% { opacity: 0.25; } }
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  flex: none;
+}
+.icon-btn:hover { background: var(--surface-2); }
+.icon-btn.ghost { border-color: transparent; background: transparent; color: var(--ink-2); }
+.icon-btn.ghost:hover { background: var(--surface-2); color: var(--ink); }
+.icon-btn.tone { background: var(--flame-soft); border-color: var(--flame-line); color: var(--accent-text); }
+
+.model-row {
+  display: flex;
+  gap: 8px;
+  padding-left: var(--gutter-l);
+  padding-right: var(--gutter-r);
+  padding-block: 4px 10px;
+  border-bottom: 1px solid var(--line);
+}
+.model-chip {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  text-align: left;
+  font-weight: 650;
+  font-size: var(--fs-sm);
+}
+.model-chip .label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.model-chip .label .mono { color: var(--ink-3); font-weight: 500; font-size: 0.74rem; margin-left: 6px; }
+.model-chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ink-3); flex: none; }
+.model-chip[data-state="ready"] .dot { background: var(--ok); box-shadow: 0 0 0 3px var(--ok-soft); }
+.model-chip[data-state="loading"] .dot { background: var(--flame); animation: blink 1s infinite; }
+
+.thread {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-left: var(--gutter-l);
+  padding-right: var(--gutter-r);
+}
+.thread-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-block: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 100%;
+}
+
+/* empty states */
+.hero {
+  margin: auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  padding-block: 12px;
+}
+.hero .torch { width: 108px; height: 108px; margin-bottom: 2px; }
+.hero-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--fs-3xl);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  max-width: 14ch;
+}
+.hero-title em { font-style: normal; color: var(--accent-text); }
+.hero-sub { color: var(--ink-2); max-width: 36ch; font-size: var(--fs-md); }
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  font-size: var(--fs-xs);
+  font-weight: 650;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.chip.ok { background: var(--ok-soft); border-color: transparent; color: var(--ok); }
+.chip.warn { background: var(--warn-soft); border-color: transparent; color: var(--warn); }
+.chip.risk { background: var(--risk-soft); border-color: transparent; color: var(--risk); }
+.chip.flame { background: var(--flame-soft); border-color: var(--flame-line); color: var(--accent-text); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  letter-spacing: 0.005em;
+  white-space: nowrap;
+  text-decoration: none;
+  color: var(--ink);
+}
+.btn:hover { background: var(--surface-3); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn.primary {
+  background: linear-gradient(180deg, #ffc05a, var(--flame) 55%, #f59a26);
+  border-color: transparent;
+  color: var(--on-flame);
+  box-shadow: 0 6px 18px -6px var(--glow), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+.btn.primary:hover { filter: brightness(1.05); }
+.btn.danger { background: var(--risk-soft); border-color: transparent; color: var(--risk); }
+.btn.ghost { background: transparent; }
+.btn.block { width: 100%; }
+.btn.sm { min-height: 36px; padding: 0 12px; border-radius: 11px; font-size: var(--fs-xs); }
+
+.steps {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  max-width: 460px;
+  counter-reset: step;
+}
+.steps li {
+  counter-increment: step;
+  text-align: left;
+  padding: 10px 10px 11px;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  font-size: var(--fs-xs);
+  color: var(--ink-2);
+  line-height: 1.4;
+}
+.steps li::before {
+  content: counter(step);
+  display: block;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--accent-text);
+  margin-bottom: 2px;
+}
+.steps li b { display: block; color: var(--ink); font-size: var(--fs-sm); }
+
+.suggestions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  max-width: 560px;
+}
+.suggestion {
+  text-align: left;
+  padding: 11px 13px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+  color: var(--ink);
+}
+.suggestion:hover { border-color: var(--flame-line); background: var(--surface-2); }
+.suggestion span { display: block; color: var(--ink-3); font-size: var(--fs-xs); margin-bottom: 2px; font-weight: 650; }
+
+/* messages */
+.example-note {
+  align-self: center;
+  font-size: var(--fs-xs);
+  font-weight: 650;
+  color: var(--ink-3);
+  border: 1px dashed var(--line);
+  border-radius: var(--r-pill);
+  padding: 4px 12px;
+}
+.msg { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.msg.user { align-items: flex-end; }
+.msg.user .bubble {
+  max-width: min(86%, 560px);
+  background: var(--surface-3);
+  border-radius: 20px 20px 6px 20px;
+  padding: 10px 15px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.msg.user .bubble img { display: block; max-width: 220px; border-radius: 12px; margin-bottom: 8px; }
+.msg-head { display: flex; align-items: center; gap: 8px; font-size: var(--fs-xs); color: var(--ink-3); font-weight: 650; }
+.msg-head .torch { width: 22px; height: 22px; }
+.msg-head b { color: var(--ink); font-weight: 750; font-size: var(--fs-sm); }
+.msg.ai .body { min-width: 0; overflow-wrap: anywhere; }
+.msg-foot { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; color: var(--ink-3); }
+.msg-foot .stats { font-size: 0.7rem; margin-left: 6px; color: var(--ink-3); }
+.msg-foot .icon-btn { width: 32px; height: 32px; border-radius: 9px; }
+.msg .error-box {
+  border-radius: 14px;
+  padding: 10px 13px;
+  background: var(--risk-soft);
+  color: var(--risk);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+.typing { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-3); font-size: var(--fs-sm); font-weight: 600; }
+
+.think {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  font-size: var(--fs-sm);
+}
+.think summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  color: var(--ink-2);
+  font-weight: 650;
+}
+.think summary::-webkit-details-marker { display: none; }
+.think summary .chev { margin-left: auto; transition: transform 0.2s; }
+.think[open] summary .chev { transform: rotate(180deg); }
+.think .think-body { padding: 0 12px 10px; color: var(--ink-3); white-space: pre-wrap; max-height: 280px; overflow: auto; font-size: 0.8rem; line-height: 1.5; }
+
+/* markdown */
+.md > * + * { margin-top: 0.7em; }
+.md h3, .md h4 { font-family: var(--font-display); font-weight: 750; letter-spacing: -0.01em; }
+.md h3 { font-size: var(--fs-lg); }
+.md h4 { font-size: var(--fs-md); }
+.md ul, .md ol { padding-left: 1.3em; margin-block: 0; }
+.md li + li { margin-top: 0.25em; }
+.md blockquote { margin: 0; padding: 2px 0 2px 12px; border-left: 3px solid var(--flame-line); color: var(--ink-2); }
+.md code { font-family: var(--font-mono); font-size: 0.86em; background: var(--surface-2); border-radius: 6px; padding: 0.1em 0.35em; }
+.md .codeblock { position: relative; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden; }
+.md .codeblock .code-head { display: flex; align-items: center; justify-content: space-between; padding: 4px 6px 4px 12px; font-size: 0.7rem; color: var(--ink-3); border-bottom: 1px solid var(--line); font-family: var(--font-mono); }
+.md pre { margin: 0; padding: 10px 12px; overflow-x: auto; font-size: 0.8rem; line-height: 1.5; }
+.md pre code { background: none; padding: 0; font-size: inherit; }
+.md .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+.md table { border-collapse: collapse; width: 100%; font-size: var(--fs-sm); }
+.md th, .md td { padding: 7px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.md th { background: var(--surface-2); font-weight: 700; }
+.md tr:last-child td { border-bottom: 0; }
+.md hr { border: 0; border-top: 1px solid var(--line); }
+.md .cursor { display: inline-block; width: 0.5em; height: 1em; vertical-align: -0.12em; background: var(--flame); border-radius: 2px; margin-left: 2px; animation: blink 0.9s infinite; }
+
+/* composer */
+.composer {
+  padding-left: var(--gutter-l);
+  padding-right: var(--gutter-r);
+  padding-block: 8px 10px;
+}
+.composer-box {
+  max-width: 720px;
+  margin: 0 auto;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  padding: 8px 8px 8px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: var(--shadow);
+}
+.composer-box:focus-within { border-color: var(--flame-line); }
+.composer textarea {
+  width: 100%;
+  resize: none;
+  border: 0;
+  outline: none;
+  background: transparent;
+  max-height: 168px;
+  min-height: 26px;
+  padding: 6px 0 2px;
+  line-height: 1.45;
+}
+.composer textarea::placeholder { color: var(--ink-3); }
+.composer-actions { display: flex; align-items: center; gap: 6px; }
+.composer-actions .spacer { flex: 1; }
+.chip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--ink-2);
+}
+.chip-btn[aria-pressed="true"] { background: var(--flame-soft); border-color: var(--flame-line); color: var(--accent-text); }
+.send-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 0;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, #ffc05a, var(--flame) 60%, #f59a26);
+  color: var(--on-flame);
+  box-shadow: 0 6px 16px -6px var(--glow);
+}
+.send-btn:disabled { background: var(--surface-3); color: var(--ink-3); box-shadow: none; cursor: not-allowed; }
+.send-btn.is-stop { background: var(--ink); color: var(--bg); }
+.attach-preview { display: flex; align-items: center; gap: 8px; }
+.attach-preview img { width: 52px; height: 52px; object-fit: cover; border-radius: 10px; border: 1px solid var(--line); }
+.composer-hint { max-width: 720px; margin: 6px auto 0; text-align: center; font-size: 0.7rem; color: var(--ink-3); }
+
+/* ---------- screen headers ---------- */
+.eyebrow {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-text);
+}
+.screen-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--fs-2xl);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-top: 2px;
+}
+.screen-sub { color: var(--ink-2); margin-top: 6px; max-width: 52ch; }
+.screen-head { display: flex; flex-direction: column; }
+.section-title { font-family: var(--font-display); font-weight: 750; font-size: var(--fs-lg); letter-spacing: -0.01em; }
+
+/* segmented */
+.seg {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+}
+.seg button {
+  border: 0;
+  background: transparent;
+  border-radius: 10px;
+  min-height: 38px;
+  padding: 0 10px;
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.seg button[aria-selected="true"], .seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 0 var(--line), 0 4px 12px -6px rgba(0, 0, 0, 0.35); }
+.seg .count { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-text); margin-left: 4px; }
+
+/* device card */
+.device {
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(120% 140% at 100% 0%, var(--flame-soft), transparent 55%),
+    var(--surface);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.device-top { display: flex; gap: 12px; align-items: center; }
+.device-ico { width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; background: var(--surface-2); color: var(--accent-text); flex: none; }
+.device-name { font-weight: 750; font-size: var(--fs-lg); line-height: 1.25; }
+.device-note { color: var(--ink-3); font-size: var(--fs-xs); }
+.stat-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.stat { padding: 9px 10px; border-radius: 12px; background: var(--surface-2); min-width: 0; }
+.stat dt { font-size: 0.68rem; font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.06em; }
+.stat dd { margin: 2px 0 0; font-family: var(--font-mono); font-weight: 600; font-size: var(--fs-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.device-advice { font-size: var(--fs-sm); color: var(--ink-2); }
+
+/* toolbar: search + filters */
+.toolbar { display: flex; flex-direction: column; gap: 10px; }
+.search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink-3);
+}
+.search:focus-within { border-color: var(--flame-line); }
+.search input { flex: 1; min-width: 0; border: 0; outline: none; background: transparent; color: var(--ink); }
+.filters { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.filters::-webkit-scrollbar { display: none; }
+.filter {
+  flex: none;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--ink-2);
+}
+.filter[aria-pressed="true"] { background: var(--flame-soft); border-color: var(--flame-line); color: var(--accent-text); }
+.sort-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: var(--fs-xs); color: var(--ink-3); }
+.select {
+  appearance: none;
+  -webkit-appearance: none;
+  height: 34px;
+  padding: 0 30px 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* model cards */
+.model-list { display: flex; flex-direction: column; gap: 12px; }
+.mcard {
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.mcard.is-pick { border-color: var(--flame-line); box-shadow: 0 0 0 3px var(--flame-soft); }
+.mcard-head { display: flex; align-items: flex-start; gap: 12px; }
+.mcard-title { flex: 1; min-width: 0; }
+.mcard-name { font-family: var(--font-display); font-weight: 800; font-size: var(--fs-xl); letter-spacing: -0.02em; line-height: 1.15; }
+.mcard-maker { color: var(--ink-3); font-size: var(--fs-xs); font-weight: 650; margin-top: 3px; }
+.fit { flex: none; font-size: 0.7rem; font-weight: 800; padding: 4px 9px; border-radius: var(--r-pill); white-space: nowrap; }
+.fit[data-fit="smooth"] { background: var(--ok-soft); color: var(--ok); }
+.fit[data-fit="ok"] { background: var(--warn-soft); color: var(--warn); }
+.fit[data-fit="heavy"] { background: var(--risk-soft); color: var(--risk); }
+.pick-tag { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-xs); font-weight: 750; color: var(--accent-text); }
+.pick-tag .torch { width: 16px; height: 16px; }
+.mcard-blurb { color: var(--ink-2); font-size: var(--fs-sm); }
+.specs { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 0; padding: 0; }
+.specs li { font-size: 0.72rem; font-weight: 650; padding: 4px 9px; border-radius: 8px; background: var(--surface-2); color: var(--ink-2); }
+.specs li.mono { font-weight: 500; }
+.specs li.lang { background: var(--flame-soft); color: var(--accent-text); }
+.quant { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 6px; }
+.quant button {
+  text-align: left;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  border-radius: 12px;
+  padding: 8px 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.quant button b { font-size: var(--fs-sm); }
+.quant button span { font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-3); }
+.quant button[aria-pressed="true"] { border-color: var(--flame-line); background: var(--flame-soft); }
+.quant button[aria-pressed="true"] span { color: var(--accent-text); }
+.mcard-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.mcard-actions .btn.primary { flex: 1; min-width: 160px; }
+.mcard-actions .status-line { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-xs); font-weight: 750; color: var(--ok); margin-right: auto; }
+.details { border-top: 1px solid var(--line); padding-top: 10px; }
+.details summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px; font-size: var(--fs-xs); font-weight: 750; color: var(--accent-text); }
+.details summary::-webkit-details-marker { display: none; }
+.details[open] summary .chev { transform: rotate(180deg); }
+.details summary .chev { transition: transform 0.2s; }
+.details dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 14px; margin: 10px 0 0; font-size: var(--fs-xs); }
+.details dt { color: var(--ink-3); font-weight: 650; }
+.details dd { margin: 0; overflow-wrap: anywhere; font-family: var(--font-mono); color: var(--ink-2); }
+
+/* download progress */
+.dl { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 14px; background: var(--surface-2); }
+.dl .torch { width: 38px; height: 38px; }
+.dl-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.dl-top { display: flex; justify-content: space-between; gap: 8px; font-size: var(--fs-xs); font-weight: 750; }
+.dl-top .pct { font-family: var(--font-mono); color: var(--accent-text); }
+.bar { height: 6px; border-radius: 6px; background: var(--surface-3); overflow: hidden; }
+.bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--ember), var(--flame)); width: 0%; transition: width 0.25s linear; }
+.dl-stats { font-size: 0.7rem; color: var(--ink-3); line-height: 1.4; }
+
+.add-own {
+  border-radius: var(--r-lg);
+  border: 1px dashed var(--line);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.add-own p { color: var(--ink-2); font-size: var(--fs-sm); }
+.add-own .row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.empty {
+  text-align: center;
+  padding: 36px 16px;
+  border-radius: var(--r-lg);
+  border: 1px dashed var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.empty .empty-ico { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; background: var(--flame-soft); color: var(--accent-text); margin-bottom: 4px; }
+.empty h3 { font-family: var(--font-display); font-weight: 750; font-size: var(--fs-lg); }
+.empty p { color: var(--ink-2); font-size: var(--fs-sm); max-width: 40ch; }
+
+.storage-line { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: var(--fs-xs); color: var(--ink-3); }
+
+/* ---------- history ---------- */
+.group-label { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); margin-top: 4px; }
+.conv-list { display: flex; flex-direction: column; gap: 8px; }
+.conv {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 8px 12px 14px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  min-width: 0;
+}
+.conv-open { flex: 1; min-width: 0; text-align: left; background: none; border: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.conv-title { font-weight: 750; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.conv-snippet { color: var(--ink-3); font-size: var(--fs-xs); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.conv-meta { font-size: 0.68rem; color: var(--ink-3); font-family: var(--font-mono); }
+.saved-card { border-radius: 16px; border: 1px solid var(--line); background: var(--surface); padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+.saved-card .md { font-size: var(--fs-sm); max-height: 220px; overflow: hidden; mask-image: linear-gradient(180deg, #000 70%, transparent); -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent); }
+.saved-card.is-open .md { max-height: none; mask-image: none; -webkit-mask-image: none; }
+.saved-meta { display: flex; align-items: center; gap: 6px; font-size: 0.7rem; color: var(--ink-3); }
+.saved-meta .spacer { flex: 1; }
+
+/* ---------- you / settings ---------- */
+.card { border-radius: var(--r-lg); border: 1px solid var(--line); background: var(--surface); padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+.card-head { display: flex; align-items: center; gap: 12px; }
+.avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--on-flame);
+  background: linear-gradient(160deg, #ffd27a, var(--flame) 50%, var(--ember));
+  flex: none;
+}
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label, .field .label { font-size: var(--fs-xs); font-weight: 750; color: var(--ink-2); }
+.field .hint { font-size: 0.72rem; color: var(--ink-3); }
+.input, .textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  padding: 10px 12px;
+  outline: none;
+}
+.input:focus, .textarea:focus { border-color: var(--flame-line); }
+.textarea { resize: vertical; min-height: 84px; line-height: 1.45; }
+.row-setting { display: flex; align-items: center; gap: 12px; }
+.row-setting .txt { flex: 1; min-width: 0; }
+.row-setting .txt b { display: block; font-size: var(--fs-sm); }
+.row-setting .txt span { display: block; font-size: var(--fs-xs); color: var(--ink-3); }
+.switch { position: relative; width: 48px; height: 28px; flex: none; }
+.switch input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; z-index: 1; }
+.switch span { position: absolute; inset: 0; border-radius: var(--r-pill); background: var(--surface-3); border: 1px solid var(--line); transition: background 0.2s; }
+.switch span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--ink-2); transition: transform 0.2s, background 0.2s; }
+.switch input:checked + span { background: var(--flame-soft); border-color: var(--flame-line); }
+.switch input:checked + span::after { transform: translateX(20px); background: var(--flame); }
+.switch input:focus-visible + span { outline: 2px solid var(--flame); outline-offset: 2px; }
+.divider { height: 1px; background: var(--line); }
+.kv { display: flex; justify-content: space-between; gap: 12px; font-size: var(--fs-sm); }
+.kv span:first-child { color: var(--ink-3); }
+
+.about {
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 1px solid var(--flame-line);
+  background:
+    radial-gradient(90% 120% at 0% 0%, var(--flame-soft), transparent 60%),
+    var(--surface);
+}
+.about-top { display: flex; align-items: center; gap: 14px; padding: 18px 16px; }
+.about-top .torch { width: 56px; height: 56px; }
+.about-name { font-family: var(--font-display); font-weight: 800; font-size: var(--fs-2xl); letter-spacing: -0.02em; line-height: 1; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.about-tag { color: var(--ink-2); font-size: var(--fs-sm); margin-top: 6px; }
+.dev {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-top: 1px solid var(--line);
+  background: var(--surface-2);
+}
+.dev-ico { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--bg); color: var(--accent-text); flex: none; }
+.dev small { display: block; font-size: 0.7rem; font-weight: 750; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+.dev b { font-family: var(--font-display); font-size: var(--fs-lg); font-weight: 800; letter-spacing: -0.01em; }
+.about-rows { padding: 6px 16px 14px; display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--line); }
+.about-rows .kv { font-size: var(--fs-xs); }
+.about-rows .kv span:last-child { text-align: right; color: var(--ink-2); }
+
+/* ---------- sheets ---------- */
+.sheet-layer { position: fixed; inset: 0; z-index: 40; display: flex; align-items: flex-end; justify-content: center; }
+.sheet-scrim { position: absolute; inset: 0; background: var(--scrim); animation: fade 0.2s ease; }
+.sheet {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  max-height: 88%;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  border-radius: 24px 24px 0 0;
+  padding-left: var(--gutter-l);
+  padding-right: var(--gutter-r);
+  padding-top: 10px;
+  padding-bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  box-shadow: var(--shadow);
+  animation: rise 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.sheet-grip { width: 42px; height: 5px; border-radius: 5px; background: var(--surface-3); margin: 0 auto 2px; }
+.sheet-head { display: flex; align-items: flex-start; gap: 10px; }
+.sheet-head h2 { flex: 1; font-family: var(--font-display); font-weight: 800; font-size: var(--fs-xl); letter-spacing: -0.02em; }
+.sheet-body { display: flex; flex-direction: column; gap: 12px; color: var(--ink-2); font-size: var(--fs-sm); }
+.sheet-actions { display: flex; flex-direction: column; gap: 8px; }
+.pick-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  text-align: left;
+  width: 100%;
+}
+.pick-row[aria-pressed="true"] { border-color: var(--flame-line); background: var(--flame-soft); }
+.pick-row .txt { flex: 1; min-width: 0; }
+.pick-row .txt b { display: block; color: var(--ink); }
+.pick-row .txt span { display: block; font-size: var(--fs-xs); color: var(--ink-3); font-family: var(--font-mono); }
+.radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--line); flex: none; display: grid; place-items: center; }
+.pick-row[aria-pressed="true"] .radio { border-color: var(--flame); }
+.pick-row[aria-pressed="true"] .radio::after { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--flame); }
+@keyframes rise { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes fade { from { opacity: 0; } }
+
+/* ---------- toasts ---------- */
+.toasts {
+  position: fixed;
+  left: 50%;
+  top: calc(64px + env(safe-area-inset-top, 0px));
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  width: min(92vw, 420px);
+}
+.toast {
+  pointer-events: auto;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 14px;
+  padding: 10px 16px;
+  font-size: var(--fs-sm);
+  font-weight: 650;
+  box-shadow: var(--shadow);
+  animation: rise 0.2s ease;
+  text-align: center;
+}
+.toast.risk { background: var(--risk); color: #fff; }
+
+/* ---------- wide screens ---------- */
+@media (min-width: 900px) {
+  .app { grid-template-columns: 248px minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); grid-template-areas: "rail banner" "rail main"; }
+  .tabbar { display: none; }
+  .rail {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding: 20px 14px 18px max(14px, env(safe-area-inset-left, 0px));
+    border-right: 1px solid var(--line);
+    background: var(--surface);
+    min-height: 0;
+  }
+  .rail-brand { display: flex; align-items: center; gap: 10px; padding: 0 8px; }
+  .rail-brand .torch { width: 38px; height: 38px; }
+  .rail-nav { display: flex; flex-direction: column; gap: 4px; }
+  .rail-nav button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 0;
+    background: transparent;
+    color: var(--ink-2);
+    font-weight: 700;
+    text-align: left;
+  }
+  .rail-nav button:hover { background: var(--surface-2); color: var(--ink); }
+  .rail-nav button[aria-current="page"] { background: var(--flame-soft); color: var(--accent-text); }
+  .rail-foot { margin-top: auto; padding: 0 8px; font-size: var(--fs-xs); color: var(--ink-3); }
+  .rail-foot b { color: var(--ink-2); }
+  .topbar .brand-inline .torch, .topbar .brand-inline .wordmark { display: none; }
+  .toasts { top: 22px; left: calc(50% + 124px); }
+  .sheet-layer { align-items: center; }
+  .sheet { border-radius: 24px; border-bottom: 1px solid var(--line); max-height: 82%; }
+  .sheet-grip { display: none; }
+}
+
+@media (max-width: 420px) {
+  .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .suggestions { grid-template-columns: minmax(0, 1fr); }
+  .hero { gap: 12px; }
+  .hero .torch { width: 84px; height: 84px; }
+  .hero-title { font-size: 1.95rem; }
+  .steps li { padding: 9px 9px 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+}
+
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="t-outer" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff5a1f"/><stop offset=".55" stop-color="#ff8a2a"/><stop offset="1" stop-color="#ffc14d"/></linearGradient>
+    <linearGradient id="t-inner" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ffd36b"/><stop offset="1" stop-color="#fff4cf"/></linearGradient>
+    <linearGradient id="t-bamboo" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b98b3e"/><stop offset=".45" stop-color="#e2c27a"/><stop offset="1" stop-color="#a27630"/></linearGradient>
+    <radialGradient id="t-glow" cx="32" cy="24" r="22" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffb23e" stop-opacity=".5"/><stop offset="1" stop-color="#ffb23e" stop-opacity="0"/></radialGradient>
+  </defs>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M5 19V7a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H9l-4 3Z"/><path d="M8.6 9h6.8M8.6 12.2h4.2"/></symbol>
+  <symbol id="i-models" viewBox="0 0 24 24"><path d="M12 3.5 20 8l-8 4.5L4 8l8-4.5Z"/><path d="m4 12 8 4.5 8-4.5"/><path d="m4 16 8 4.5 8-4.5"/></symbol>
+  <symbol id="i-history" viewBox="0 0 24 24"><path d="M3.8 12a8.2 8.2 0 1 0 2.4-5.8"/><path d="M3.6 4.4v3.8h3.8"/><path d="M12 8v4.3l2.9 1.8"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.4" r="3.7"/><path d="M4.8 19.6c1.3-3.4 4-5.1 7.2-5.1s5.9 1.7 7.2 5.1"/></symbol>
+  <symbol id="i-new" viewBox="0 0 24 24"><path d="M11 4.6H7a2.4 2.4 0 0 0-2.4 2.4v10A2.4 2.4 0 0 0 7 19.4h10a2.4 2.4 0 0 0 2.4-2.4v-4"/><path d="M17.5 4a1.9 1.9 0 0 1 2.7 2.7l-7.6 7.6-3.1.7.7-3.1L17.5 4Z"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.1"/><circle cx="9" cy="17" r="2.1"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6.5 9.5 5.5 5.5 5.5-5.5"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M12 19V5.5M6 11.2 12 5.2l6 6" stroke-width="2.3"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2.2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2.6"/><circle cx="9" cy="10" r="1.8"/><path d="m20.5 16-4.8-4.8L6.2 19.4"/></symbol>
+  <symbol id="i-think" viewBox="0 0 24 24"><path d="M9.2 17.6h5.6M10.2 20.5h3.6"/><path d="M12 3.5a5.8 5.8 0 0 0-3.4 10.5c.6.5 1 1.2 1 2v.1h4.8V16c0-.8.4-1.5 1-2A5.8 5.8 0 0 0 12 3.5Z"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11" height="11" rx="2.3"/><path d="M15.5 8.5V6.8a2.3 2.3 0 0 0-2.3-2.3H6.8a2.3 2.3 0 0 0-2.3 2.3v6.4a2.3 2.3 0 0 0 2.3 2.3h1.7"/></symbol>
+  <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M7 4.5h10a1 1 0 0 1 1 1v14.2l-6-3.9-6 3.9V5.5a1 1 0 0 1 1-1Z"/></symbol>
+  <symbol id="i-bookmark-fill" viewBox="0 0 24 24"><path d="M7 4.5h10a1 1 0 0 1 1 1v14.2l-6-3.9-6 3.9V5.5a1 1 0 0 1 1-1Z" fill="currentColor"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.6 4.3v4.2h-4.2"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V5.3c0-.5.3-.8.8-.8h3.4c.5 0 .8.3.8.8V7M6.6 7l.8 11.5c.1 1.1.9 2 2 2h5.2c1.1 0 1.9-.9 2-2L17.4 7"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10.5l5 5 5-5"/><path d="M5 19.6h14"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.6 4.4 4.4L19 7.4"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.4"/><path d="m16 16 4 4"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6.5" y="2.8" width="11" height="18.4" rx="2.7"/><path d="M10.5 18h3"/></symbol>
+  <symbol id="i-wifi-off" viewBox="0 0 24 24"><path d="M3.5 3.5l17 17"/><path d="M8.7 13.3a5 5 0 0 1 4.1-1.2M5.4 10.1a9.6 9.6 0 0 1 3.3-2M12 5.6c2.9 0 5.6 1.1 7.6 3"/><circle cx="12" cy="18" r="1.1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V7.9a3.5 3.5 0 0 1 7 0v2.6"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.5 19 6v5.5c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6l7-2.5Z"/><path d="m9.2 12.2 2 2 3.6-3.8"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M4 7.4V18a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 20 18V9.6a1.5 1.5 0 0 0-1.5-1.5h-6.8L9.6 5.6H5.5A1.5 1.5 0 0 0 4 7.1Z"/><path d="M12 16.6v-5M9.7 13.7 12 11.4l2.3 2.3"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3A4 4 0 0 0 13 5.3l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3A4 4 0 0 0 11 18.7l1-1"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="m8.5 7.5-4.5 4.5 4.5 4.5M15.5 7.5l4.5 4.5-4.5 4.5"/></symbol>
+</svg>
+
+<div class="app" id="app">
+  <div class="preview-banner" id="preview-banner" hidden>
+    <svg class="icon sm" aria-hidden="true"><use href="#i-think"/></svg>
+    <span>Design preview. Model downloads and offline chat work once the app is published on its own site.</span>
+  </div>
+
+  <aside class="rail" aria-label="Main">
+    <div class="rail-brand"><span class="rail-torch" id="rail-torch"></span><span class="wordmark">Assistant</span></div>
+    <nav class="rail-nav">
+      <button type="button" data-nav="chat" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg>Chat</button>
+      <button type="button" data-nav="models"><svg class="icon" aria-hidden="true"><use href="#i-models"/></svg>Models</button>
+      <button type="button" data-nav="history"><svg class="icon" aria-hidden="true"><use href="#i-history"/></svg>History</button>
+      <button type="button" data-nav="you"><svg class="icon" aria-hidden="true"><use href="#i-user"/></svg>You</button>
+    </nav>
+    <p class="rail-foot">Offline AI by <b>Jian Ray Pairat</b></p>
+  </aside>
+
+  <main class="main">
+    <section class="screen is-active" id="screen-chat" aria-label="Chat">
+      <header class="topbar">
+        <div class="brand-inline"><span id="topbar-torch"></span><span class="wordmark">Assistant</span><span class="status-pill" id="status-pill" data-tone="busy">Starting…</span></div>
+        <button type="button" class="icon-btn ghost" data-action="new-chat" aria-label="New chat"><svg class="icon" aria-hidden="true"><use href="#i-new"/></svg></button>
+      </header>
+      <div class="model-row">
+        <button type="button" class="model-chip" id="model-chip" data-action="open-model-picker"><span class="dot"></span><span class="label">Choose a model</span></button>
+        <button type="button" class="icon-btn tone" data-action="open-gen-settings" aria-label="Reply settings"><svg class="icon" aria-hidden="true"><use href="#i-sliders"/></svg></button>
+      </div>
+      <div class="thread" id="thread"><div class="thread-inner" id="thread-inner"></div></div>
+      <form class="composer" id="composer" autocomplete="off">
+        <div class="composer-box">
+          <div class="attach-preview" id="attach-preview" hidden></div>
+          <label class="sr-only" for="prompt">Message</label>
+          <textarea id="prompt" rows="1" placeholder="Message Assistant…"></textarea>
+          <div class="composer-actions">
+            <button type="button" class="chip-btn" id="btn-image" data-action="attach-image" hidden><svg class="icon sm" aria-hidden="true"><use href="#i-image"/></svg>Photo</button>
+            <button type="button" class="chip-btn" id="btn-think" data-action="toggle-think" aria-pressed="false" hidden><svg class="icon sm" aria-hidden="true"><use href="#i-think"/></svg>Think</button>
+            <span class="spacer"></span>
+            <button type="submit" class="send-btn" id="btn-send" aria-label="Send"><svg class="icon" aria-hidden="true"><use href="#i-send"/></svg></button>
+          </div>
+        </div>
+        <p class="composer-hint">Answers come from a small AI on your device and can be wrong.</p>
+        <input type="file" id="image-input" accept="image/*" hidden>
+      </form>
+    </section>
+
+    <section class="screen" id="screen-models" aria-label="Models"><div class="screen-scroll"><div class="screen-inner" id="models-root"></div></div></section>
+    <section class="screen" id="screen-history" aria-label="History"><div class="screen-scroll"><div class="screen-inner" id="history-root"></div></div></section>
+    <section class="screen" id="screen-you" aria-label="You"><div class="screen-scroll"><div class="screen-inner" id="you-root"></div></div></section>
+  </main>
+
+  <nav class="tabbar" aria-label="Main">
+    <button type="button" class="tab" data-nav="chat" aria-current="page"><span class="tab-ico"><svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg></span>Chat</button>
+    <button type="button" class="tab" data-nav="models"><span class="tab-ico"><svg class="icon" aria-hidden="true"><use href="#i-models"/></svg></span>Models</button>
+    <button type="button" class="tab" data-nav="history"><span class="tab-ico"><svg class="icon" aria-hidden="true"><use href="#i-history"/></svg></span>History</button>
+    <button type="button" class="tab" data-nav="you"><span class="tab-ico"><svg class="icon" aria-hidden="true"><use href="#i-user"/></svg></span>You</button>
+  </nav>
+</div>
+
+<div class="sheet-layer" id="sheet-layer" hidden></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<input type="file" id="gguf-input" multiple hidden>
+
+<script>window.__APP_PREVIEW__ = false;</script>
+<script type="module">
+/* Assistant — offline AI app. Developed by Jian Ray Pairat.
+   The AI runs in the browser with wllama (llama.cpp compiled to WebAssembly).
+   A model is downloaded once from Hugging Face into the browser's private storage (OPFS);
+   after that, chats run with no internet. */
+
+const PREVIEW = window.__APP_PREVIEW__ === true;
+const TEST_ENGINE = window.__APP_TEST_ENGINE__ || null;
+const APP = { name: 'Assistant', version: '1.1.0', developer: 'Jian Ray Pairat' };
+const ENGINE_VERSIONS = ['3.8.1', '3.6.1'];
+const STORE_PREFIX = 'assistant-ai.';
+const RUNTIME_CACHE = 'assistant-ai-runtime';
+const LOCAL_HOST = 'https://local.assistant-ai/';
+/* Compatibility mode (Safari, older browsers) is a 32-bit engine: very large files won't fit. */
+const COMPAT_MAX = 3.5e9;
+
+/* ------------------------------------------------------------------ */
+/* Model catalog. Every file below was checked on Hugging Face.        */
+/* size = model file in bytes; mmproj = the photo encoder file.        */
+/* ------------------------------------------------------------------ */
+const LFM_SAMPLING = { temperature: 0.3, min_p: 0.15, repeat_penalty: 1.05 };
+const LFM_VL_SAMPLING = { temperature: 0.1, min_p: 0.15, repeat_penalty: 1.05 };
+const QWEN25_SAMPLING = { temperature: 0.7, top_p: 0.8, top_k: 20, repeat_penalty: 1.05 };
+const CODER_SAMPLING = { temperature: 0.4, top_p: 0.8, top_k: 20, repeat_penalty: 1.05 };
+const GEMMA2_SAMPLING = { temperature: 0.7, top_k: 64, top_p: 0.95 };
+const GEMMA3_SAMPLING = { temperature: 1.0, top_k: 64, top_p: 0.95, min_p: 0 };
+const LLAMA_SAMPLING = { temperature: 0.6, top_p: 0.9 };
+const STEP_SAMPLING = { temperature: 0.6, top_p: 0.95 };
+const LIC = {
+  apache: 'Apache 2.0', mit: 'MIT', lfm: 'LFM Open License v1.0', gemma: 'Gemma Terms of Use',
+  qwenResearch: 'Qwen Research License (non-commercial)',
+};
+const QWEN3_LANGS = '119 languages, incl. Tagalog and Cebuano';
+
+const CATALOG = [
+  /* Compact: under 1 GB, made for phones */
+  {
+    id: 'lfm2-350m', name: 'LFM2 350M', maker: 'Liquid AI', repo: 'LiquidAI/LFM2-350M-GGUF',
+    params: '350M', tags: ['chat'],
+    blurb: 'The smallest model here. Very fast replies for simple questions on any phone.',
+    files: [
+      { quant: 'Q8_0', label: 'Max quality', file: 'LFM2-350M-Q8_0.gguf', size: 379e6 },
+      { quant: 'Q4_K_M', label: 'Smaller', file: 'LFM2-350M-Q4_K_M.gguf', size: 229e6 },
+    ],
+    langs: 'English + 7 major languages', license: LIC.lfm, ctx: '32K', sampling: LFM_SAMPLING,
+  },
+  {
+    id: 'smollm2-360m', name: 'SmolLM2 360M', maker: 'Hugging Face', via: 'ngxson', repo: 'ngxson/SmolLM2-360M-Instruct-Q8_0-GGUF',
+    params: '360M', tags: ['chat'],
+    blurb: 'A light option for older or low-memory phones. Short answers, English works best.',
+    files: [{ quant: 'Q8_0', label: 'Max quality', file: 'smollm2-360m-instruct-q8_0.gguf', size: 386404992 }],
+    langs: 'English', license: LIC.apache, ctx: '8K',
+    sampling: { temperature: 0.4, top_p: 0.9, repeat_penalty: 1.1 },
+  },
+  {
+    id: 'qwen2.5-0.5b', name: 'Qwen2.5 0.5B', maker: 'Alibaba Qwen', repo: 'Qwen/Qwen2.5-0.5B-Instruct-GGUF',
+    params: '0.5B', tags: ['chat', 'multilingual'],
+    blurb: 'Light, dependable instruction follower for low-memory phones.',
+    files: [
+      { quant: 'Q8_0', label: 'Max quality', file: 'qwen2.5-0.5b-instruct-q8_0.gguf', size: 675710816 },
+      { quant: 'Q4_K_M', label: 'Smaller', file: 'qwen2.5-0.5b-instruct-q4_k_m.gguf', size: 491e6 },
+    ],
+    langs: '29+ languages', license: LIC.apache, ctx: '32K', sampling: QWEN25_SAMPLING,
+  },
+  {
+    id: 'qwen2.5-coder-0.5b', name: 'Qwen2.5 Coder 0.5B', maker: 'Alibaba Qwen', via: 'bartowski', repo: 'bartowski/Qwen2.5-Coder-0.5B-Instruct-GGUF',
+    params: '0.5B', tags: ['code'],
+    blurb: 'Tiny coding helper for short snippets, syntax questions and quick fixes.',
+    files: [
+      { quant: 'Q8_0', label: 'Max quality', file: 'Qwen2.5-Coder-0.5B-Instruct-Q8_0.gguf', size: 531e6 },
+      { quant: 'Q4_K_M', label: 'Smaller', file: 'Qwen2.5-Coder-0.5B-Instruct-Q4_K_M.gguf', size: 398e6 },
+    ],
+    langs: '92 programming languages', license: LIC.apache, ctx: '32K', sampling: CODER_SAMPLING,
+  },
+  {
+    id: 'qwen3-0.6b', name: 'Qwen3 0.6B', maker: 'Alibaba Qwen', via: 'unsloth', repo: 'unsloth/Qwen3-0.6B-GGUF',
+    params: '0.6B', tags: ['chat', 'reasoning', 'multilingual'], think: 'qwen3',
+    blurb: 'Small and quick, with an optional Think mode. A good first model for most phones.',
+    files: [
+      { quant: 'Q8_0', label: 'Max quality', file: 'Qwen3-0.6B-Q8_0.gguf', size: 639447744 },
+      { quant: 'Q4_K_M', label: 'Smaller', file: 'Qwen3-0.6B-Q4_K_M.gguf', size: 397e6 },
+    ],
+    langs: QWEN3_LANGS, license: LIC.apache, ctx: '32K',
+  },
+  {
+    id: 'lfm2-700m', name: 'LFM2 700M', maker: 'Liquid AI', repo: 'LiquidAI/LFM2-700M-GGUF',
+    params: '700M', tags: ['chat'],
+    blurb: 'Very fast on phone processors. Good for quick chat, short summaries and simple tasks.',
+    files: [{ quant: 'Q4_K_M', label: 'Balanced', file: 'LFM2-700M-Q4_K_M.gguf', size: 468624320 }],
+    langs: 'English + 7 major languages', license: LIC.lfm, ctx: '32K', sampling: LFM_SAMPLING,
+  },
+  {
+    id: 'smolvlm-500m', name: 'SmolVLM 500M', maker: 'Hugging Face', via: 'ggml-org', repo: 'ggml-org/SmolVLM-500M-Instruct-GGUF',
+    params: '500M', tags: ['vision'],
+    blurb: 'Small photo reader. Describes pictures and reads short text in images.',
+    files: [{ quant: 'Q8_0', label: 'Max quality', file: 'SmolVLM-500M-Instruct-Q8_0.gguf', size: 437e6 }],
+    mmproj: { file: 'mmproj-SmolVLM-500M-Instruct-Q8_0.gguf', size: 109e6 },
+    langs: 'English', license: LIC.apache, ctx: '8K',
+    sampling: { temperature: 0.2, top_p: 0.9, repeat_penalty: 1.05 },
+  },
+  {
+    id: 'lfm25-vl-450m', name: 'LFM2.5 VL 450M', maker: 'Liquid AI', repo: 'LiquidAI/LFM2.5-VL-450M-GGUF',
+    params: '450M', tags: ['vision'],
+    blurb: 'Looks at photos. Ask what is in a picture, read a sign or describe a scene, offline.',
+    files: [{ quant: 'Q4_0', label: 'Balanced', file: 'LFM2.5-VL-450M-Q4_0.gguf', size: 566231040 }],
+    mmproj: { file: 'mmproj-LFM2.5-VL-450m-Q8_0.gguf', size: 0 },
+    langs: 'English-first', license: LIC.lfm, ctx: '32K', sampling: LFM_VL_SAMPLING,
+  },
+  {
+    id: 'lfm25-1.2b', name: 'LFM2.5 1.2B', maker: 'Liquid AI', repo: 'LiquidAI/LFM2.5-1.2B-Instruct-GGUF',
+    params: '1.2B', tags: ['chat'],
+    blurb: 'Liquid AI’s newest small model. Quick on phones, with clearer writing than the tiny models.',
+    files: [
+      { quant: 'Q4_K_M', label: 'Balanced', file: 'LFM2.5-1.2B-Instruct-Q4_K_M.gguf', size: 731e6 },
+      { quant: 'Q8_0', label: 'Max quality', file: 'LFM2.5-1.2B-Instruct-Q8_0.gguf', size: 1.25e9 },
+    ],
+    langs: 'English + 7 major languages', license: LIC.lfm, ctx: '32K', sampling: LFM_SAMPLING,
+  },
+  {
+    id: 'lfm25-1.2b-thinking', name: 'LFM2.5 1.2B Thinking', maker: 'Liquid AI', repo: 'LiquidAI/LFM2.5-1.2B-Thinking-GGUF',
+    params: '1.2B', tags: ['reasoning'], think: 'always',
+    blurb: 'Thinks step by step before it answers. Small enough for phones, good for math and logic.',
+    files: [{ quant: 'Q4_K_M', label: 'Balanced', file: 'LFM2.5-1.2B-Thinking-Q4_K_M.gguf', size: 731e6 }],
+    langs: 'English + 7 major languages', license: LIC.lfm, ctx: '32K', sampling: LFM_SAMPLING,
+  },
+  {
+    id: 'gemma3-1b', name: 'Gemma 3 1B', maker: 'Google', via: 'unsloth', repo: 'unsloth/gemma-3-1b-it-GGUF',
+    params: '1B', tags: ['chat', 'multilingual'],
+    blurb: 'Friendly, clear answers for school, work and everyday questions.',
+    files: [
+      { quant: 'Q4_K_M', label: 'Balanced', file: 'gemma-3-1b-it-Q4_K_M.gguf', size: 806e6 },
+      { quant: 'Q8_0', label: 'Max quality', file: 'gemma-3-1b-it-Q8_0.gguf', size: 1.07e9 },
+    ],
+    langs: 'Trained on 140+ languages', license: LIC.gemma, ctx: '32K', sampling: GEMMA3_SAMPLING,
+  },
+  {
+    id: 'llama3.2-1b', name: 'Llama 3.2 1B', maker: 'Meta', via: 'hugging-quants', repo: 'hugging-quants/Llama-3.2-1B-Instruct-Q4_K_M-GGUF',
+    params: '1B', tags: ['chat'],
+    blurb: 'Meta’s compact assistant. Solid for writing help, summaries and quick questions.',
+    files: [
+      { quant: 'Q4_K_M', label: 'Balanced', file: 'llama-3.2-1b-instruct-q4_k_m.gguf', size: 807690656 },
+      { quant: 'Q8_0', label: 'Max quality', repo: 'bartowski/Llama-3.2-1B-Instruct-GGUF', file: 'Llama-3.2-1B-Instruct-Q8_0.gguf', size: 1.32e9 },
+    ],
+    langs: '8 major languages', license: 'Llama 3.2 Community License', ctx: '128K', sampling: LLAMA_SAMPLING,
+  },
+  {
+    id: 'qwen2.5-1.5b', name: 'Qwen2.5 1.5B', maker: 'Alibaba Qwen', via: 'bartowski', repo: 'bartowski/Qwen2.5-1.5B-Instruct-GGUF',
+    params: '1.5B', tags: ['chat', 'multilingual'],
+    blurb: 'Dependable everyday assistant for writing, summaries and questions.',
+    files: [{ quant: 'Q4_K_M', label: 'Balanced', file: 'Qwen2.5-1.5B-Instruct-Q4_K_M.gguf', size: 986e6 }],
+    langs: '29+ languages', license: LIC.apache, ctx: '32K', sampling: QWEN25_SAMPLING,
+  },
+  {
+    id: 'qwen2.5-coder-1.5b', name: 'Qwen2.5 Coder 1.5B', maker: 'Alibaba Qwen', via: 'bartowski', repo: 'bartowski/Qwen2.5-Coder-1.5B-Instruct-GGUF',
+    params: '1.5B', tags: ['code'],
+    blurb: 'Coding assistant for explanations, snippets, debugging and converting code.',
+    files: [{ quant: 'Q4_K_M', label: 'Balanced', file: 'Qwen2.5-Coder-1.5B-Instruct-Q4_K_M.gguf', size: 986e6 }],
+    langs: '92 programming languages', license: LIC.apache, ctx: '32K', sampling: CODER_SAMPLING,
+  },
+  {
+    id: 'r1-distill-1.5b', name: 'DeepSeek R1 Distill 1.5B', maker: 'DeepSeek', via: 'bartowski', repo: 'bartowski/DeepSeek-R1-Distill-Qwen-1.5B-GGUF',
+    params: '1.5B', tags: ['reasoning'], think: 'always',
+    blurb: 'Thinks step by step before it answers. Best for math and puzzles, slower to reply.',
+    files: [
+      { quant: 'Q4_K_M', label: 'Balanced', file: 'DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf', size: 1.12e9 },
+      { quant: 'Q3_K_M', label: 'Smaller', file: 'DeepSeek-R1-Distill-Qwen-1.5B-Q3_K_M.gguf', size: 924456032 },
+    ],
+    langs: 'English, Chinese', license: LIC.mit, ctx: '128K', sampling: STEP_SAMPLING,
+  },
+  {
+    id: 'smollm2-1.7b', name: 'SmolLM2 1.7B', maker: 'Hugging Face', via: 'ngxson', repo: 'ngxson/SmolLM2-1.7B-Instruct-Q4_K_M-GGUF',
+    params: '1.7B', tags: ['chat'],
+    blurb: 'Bigger SmolLM with more knowledge and better writing. English works best.',
+    files: [{ quant: 'Q4_K_M', label: 'Balanced', file: 'smollm2-1.7b-instruct-q4_k_m.gguf', size: 1055609536 }],
+    langs: 'English', license: LIC.apache, ctx: '8K',
+    sampling: { temperature: 0.4, top_p: 0.9, repeat_penalty: 1.05 },
+  },
+  {
+    id: 'qwen3-1.7b', name: 'Qwen3 1.7B', maker: 'Alibaba Qwen', via: 'unsloth', repo: 'unsloth/Qwen3-1.7B-GGUF',
+    params: '1.7B', tags: ['chat', 'reasoning', 'multilingual'], think: 'qwen3',
+    blurb: 'Strong all-rounder with an optional Think mode for math, logic and study help.',
+    files: [
+      { quant: 'Q4_K_M', label: 'Balanced', file: 'Qwen3-1.7B-Q4_K_M.gguf', size: 1107409472 },
+      { quant: 'Q8_0', label: 'Max quality', file: 'Qwen3-1.7B-Q8_0.gguf', size: 1.83e9 },
+    ],
+    langs: QWEN3_LANGS, license: LIC.apache, ctx: '32K',
+  },
+  {
+    id: 'lfm2-vl-1.6b', name: 'LFM2 VL 1.6B', maker: 'Liquid AI', repo: 'LiquidAI/LFM2-VL-1.6B-GGUF',
+    params: '1.6B', tags: ['vision'],
+    blurb: 'Clearer photo understanding than the tiny vision models. Good at reading text in pictures.',
+    files: [
+      { quant: 'Q4_0', label: 'Balanced', file: 'LFM2-VL-1.6B-Q4_0.gguf', size: 696e6 },
+      { quant: 'Q8_0', label: 'Max quality', file: 'LFM2-VL-1.6B-Q8_0.gguf', size: 1.25e9 },
+    ],
+    mmproj: { file: 'mmproj-LFM2-VL-1.6B-Q8_0.gguf', size: 564e6 },
+    langs: 'English-first', license: LIC.lfm, ctx: '32K', sampling: LFM_VL_SAMPLING,
+  },
+
+  /* Medium: about 2–4 GB, for high-memory phones and computers */
+  {
+    id: 'gemma2-2b', name: 'Gemma 2 2B', maker: 'Google', via: 'bartowski', repo: 'bartowski/gemma-2-2b-it-GGUF',
+    params: '2B', tags: ['chat'],
+    blurb: 'Polished writing, summaries and general chat from Google.',
+    files: [{ quant: 'Q4_K_M', label: 'Balanced', file: 'gemma-2-2b-it-Q4_K_M.gguf', size: 1.71e9 }],
+    langs: 'English-first', license: LIC.gemma, ctx: '8K', sampling: GEMMA2_SAMPLING,
+  },
+  {
+    id: 'smollm3-3b', name: 'SmolLM3 3B', maker: 'Hugging Face', via: 'ggml-org', repo: 'ggml-org/SmolLM3-3B-GGUF',
+    params: '3B', tags: ['chat', 'reasoning'], think: 'smollm3',
+    blurb: 'Strong for its size, with an optional Think mode for harder questions.',
+    files: [{ quant: 'Q4_K_M', label: 'Balanced', file: 'SmolLM3-Q4_K_M.gguf', size: 1915305312 }],
+    langs: 'English + 5 European languages', license: LIC.apache, ctx: '64K', sampling: STEP_SAMPLING,
+  },
+  {
+    id: 'qwen2.5-coder-3b', name: 'Qwen2.5 Coder 3B', maker: 'Alibaba Qwen', via: 'bartowski', repo: 'bartowski/Qwen2.5-Coder-3B-Instruct-GGUF',
+    params: '3B', tags: ['code'],
+    blurb: 'Stronger coding help for debugging, planning and bigger code tasks.',
+    files: [{ quant: 'Q4_K_M', label: 'Balanced', file: 'Qwen2.5-Coder-3B-Instruct-Q4_K_M.gguf', size: 1.93e9 }],
+    langs: '92 programming languages', license: LIC.qwenResearch, ctx: '32K', sampling: CODER_SAMPLING,
+  },
+  {
+    id: 'llama3.2-3b', name: 'Llama 3.2 3B', maker: 'Meta', via: 'bartowski', repo: 'bartowski/Llama-3.2-3B-Instruct-GGUF',
+    params: '3B', tags: ['chat'],
+    blurb: 'Meta’s larger small model. Better reasoning and writing than the 1B.',
+    files: [{ quant: 'Q4_K_M', label: 'Balanced', file: 'Llama-3.2-3B-Instruct-Q4_K_M.gguf', size: 2.02e9 }],
+    langs: '8 major languages', license: 'Llama 3.2 Community License', ctx: '128K', sampling: LLAMA_SAMPLING,
+  },
+  {
+    id: 'qwen2.5-vl-3b', name: 'Qwen2.5 VL 3B', maker: 'Alibaba Qwen', via: 'ggml-org', repo: 'ggml-org/Qwen2.5-VL-3B-Instruct-GGUF',
+    params: '3B', tags: ['vision', 'multilingual'],
+    blurb: 'Strong photo understanding for documents, charts, screenshots and scenes.',
+    files: [{ quant: 'Q4_K_M', label: 'Balanced', file: 'Qwen2.5-VL-3B-Instruct-Q4_K_M.gguf', size: 1.93e9 }],
+    mmproj: { file: 'mmproj-Qwen2.5-VL-3B-Instruct-Q8_0.gguf', size: 845e6 },
+    langs: '29+ languages', license: LIC.qwenResearch, ctx: '32K',
+    sampling: { temperature: 0.3, top_p: 0.8, top_k: 20, repeat_penalty: 1.05 },
+  },
+  {
+    id: 'phi3.5-mini', name: 'Phi-3.5 Mini', maker: 'Microsoft', via: 'bartowski', repo: 'bartowski/Phi-3.5-mini-instruct-GGUF',
+    params: '3.8B', tags: ['chat', 'code'],
+    blurb: 'Microsoft’s compact model. Good at reasoning, writing and coding.',
+    files: [{ quant: 'Q4_K_M', label: 'Balanced', file: 'Phi-3.5-mini-instruct-Q4_K_M.gguf', size: 2.39e9 }],
+    langs: 'English best, many languages', license: LIC.mit, ctx: '128K', sampling: STEP_SAMPLING,
+  },
+  {
+    id: 'phi4-mini', name: 'Phi-4 Mini', maker: 'Microsoft', via: 'bartowski', repo: 'bartowski/microsoft_Phi-4-mini-instruct-GGUF',
+    params: '3.8B', tags: ['chat', 'code', 'reasoning'],
+    blurb: 'Newer Phi with stronger math, logic and instruction following.',
+    files: [{ quant: 'Q4_K_M', label: 'Balanced', file: 'microsoft_Phi-4-mini-instruct-Q4_K_M.gguf', size: 2.49e9 }],
+    langs: 'English best, many languages', license: LIC.mit, ctx: '128K', sampling: STEP_SAMPLING,
+  },
+  {
+    id: 'qwen3-4b', name: 'Qwen3 4B', maker: 'Alibaba Qwen', via: 'unsloth', repo: 'unsloth/Qwen3-4B-GGUF',
+    params: '4B', tags: ['chat', 'code', 'reasoning', 'multilingual'], think: 'qwen3',
+    blurb: 'A big step up for reasoning, coding and study help, with Think mode.',
+    files: [{ quant: 'Q4_K_M', label: 'Balanced', file: 'Qwen3-4B-Q4_K_M.gguf', size: 2.5e9 }],
+    langs: QWEN3_LANGS, license: LIC.apache, ctx: '32K',
+  },
+  {
+    id: 'gemma3-4b', name: 'Gemma 3 4B', maker: 'Google', via: 'ggml-org', repo: 'ggml-org/gemma-3-4b-it-GGUF',
+    params: '4B', tags: ['chat', 'vision', 'multilingual'],
+    blurb: 'Chat and photo understanding in one model, trained on 140+ languages.',
+    files: [{ quant: 'Q4_K_M', label: 'Balanced', file: 'gemma-3-4b-it-Q4_K_M.gguf', size: 2.49e9 }],
+    mmproj: { file: 'mmproj-model-f16.gguf', size: 851e6 },
+    langs: 'Trained on 140+ languages', license: LIC.gemma, ctx: '128K', sampling: GEMMA3_SAMPLING,
+  },
+
+  /* Large: over 4 GB, best on a computer with 16 GB of memory */
+  {
+    id: 'mistral-7b', name: 'Mistral 7B v0.3', maker: 'Mistral AI', via: 'bartowski', repo: 'bartowski/Mistral-7B-Instruct-v0.3-GGUF',
+    params: '7B', tags: ['chat'],
+    blurb: 'Classic 7B assistant for writing and general questions. Best on a laptop or desktop.',
+    files: [{ quant: 'Q4_K_M', label: 'Balanced', file: 'Mistral-7B-Instruct-v0.3-Q4_K_M.gguf', size: 4.37e9 }],
+    langs: 'English-first', license: LIC.apache, ctx: '32K', sampling: { temperature: 0.7, top_p: 0.95 },
+  },
+  {
+    id: 'qwen2.5-7b', name: 'Qwen2.5 7B', maker: 'Alibaba Qwen', via: 'bartowski', repo: 'bartowski/Qwen2.5-7B-Instruct-GGUF',
+    params: '7B', tags: ['chat', 'multilingual'],
+    blurb: 'Strong all-round assistant for writing, analysis and multilingual answers.',
+    files: [{ quant: 'Q4_K_M', label: 'Balanced', file: 'Qwen2.5-7B-Instruct-Q4_K_M.gguf', size: 4.68e9 }],
+    langs: '29+ languages', license: LIC.apache, ctx: '128K', sampling: QWEN25_SAMPLING,
+  },
+  {
+    id: 'r1-distill-7b', name: 'DeepSeek R1 Distill 7B', maker: 'DeepSeek', via: 'bartowski', repo: 'bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF',
+    params: '7B', tags: ['reasoning'], think: 'always',
+    blurb: 'Careful step-by-step reasoning for hard math and logic problems.',
+    files: [{ quant: 'Q4_K_M', label: 'Balanced', file: 'DeepSeek-R1-Distill-Qwen-7B-Q4_K_M.gguf', size: 4.68e9 }],
+    langs: 'English, Chinese', license: LIC.mit, ctx: '128K', sampling: STEP_SAMPLING,
+  },
+  {
+    id: 'llama3.1-8b', name: 'Llama 3.1 8B', maker: 'Meta', via: 'bartowski', repo: 'bartowski/Meta-Llama-3.1-8B-Instruct-GGUF',
+    params: '8B', tags: ['chat'],
+    blurb: 'Meta’s popular 8B assistant, with a long memory for big documents.',
+    files: [{ quant: 'Q4_K_M', label: 'Balanced', file: 'Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf', size: 4.92e9 }],
+    langs: '8 major languages', license: 'Llama 3.1 Community License', ctx: '128K', sampling: LLAMA_SAMPLING,
+  },
+  {
+    id: 'qwen3-8b', name: 'Qwen3 8B', maker: 'Alibaba Qwen', via: 'unsloth', repo: 'unsloth/Qwen3-8B-GGUF',
+    params: '8B', tags: ['chat', 'code', 'reasoning', 'multilingual'], think: 'qwen3',
+    blurb: 'The most capable model here, with Think mode. For computers with 16 GB of memory or more.',
+    files: [{ quant: 'Q4_K_M', label: 'Balanced', file: 'Qwen3-8B-Q4_K_M.gguf', size: 5.03e9 }],
+    langs: QWEN3_LANGS, license: LIC.apache, ctx: '32K',
+  },
+  {
+    id: 'gemma2-9b', name: 'Gemma 2 9B', maker: 'Google', via: 'bartowski', repo: 'bartowski/gemma-2-9b-it-GGUF',
+    params: '9B', tags: ['chat'],
+    blurb: 'High-quality writing and chat from Google. Needs a powerful computer.',
+    files: [{ quant: 'Q4_K_M', label: 'Balanced', file: 'gemma-2-9b-it-Q4_K_M.gguf', size: 5.76e9 }],
+    langs: 'English-first', license: LIC.gemma, ctx: '8K', sampling: GEMMA2_SAMPLING,
+  },
+];
+const PICK_ORDER = ['qwen3-4b', 'qwen3-1.7b', 'gemma3-1b', 'lfm25-1.2b', 'qwen3-0.6b', 'lfm2-700m', 'lfm2-350m', 'smollm2-360m'];
+
+const FILTERS = [
+  { id: 'all', label: 'All' },
+  { id: 'chat', label: 'Chat' },
+  { id: 'code', label: 'Code' },
+  { id: 'vision', label: 'Photos' },
+  { id: 'reasoning', label: 'Reasoning' },
+  { id: 'multilingual', label: 'Multilingual' },
+  { id: 'under1gb', label: 'Under 1 GB' },
+];
+
+/** Download size of one quality option, including the photo encoder for vision models. */
+const totalSize = (entry, f) => (f?.size || 0) + (entry?.mmproj?.size || 0);
+const sizeClass = (n) => (n < 1e9 ? 'Compact' : n < 2e9 ? 'Small' : n < 4e9 ? 'Medium' : 'Large');
+
+const SUGGESTIONS = [
+  { k: 'Study', t: 'Give me 5 practice questions for the Civil Service Exam, with answers.' },
+  { k: 'Explain', t: 'Explain photosynthesis like I’m in Grade 6.' },
+  { k: 'Write', t: 'Write a short Taglish caption for my milk tea shop’s new flavor.' },
+  { k: 'Plan', t: 'Help me make a weekly budget for a ₱15,000 monthly allowance.' },
+];
+
+/* ------------------------------------------------------------------ */
+/* Small helpers                                                       */
+/* ------------------------------------------------------------------ */
+const $ = (sel, root = document) => root.querySelector(sel);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const hfUrl = (repo, file) => `https://huggingface.co/${repo}/resolve/main/${file}`;
+const icon = (name, cls = '') => `<svg class="icon ${cls}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
+
+function fmtBytes(n, digits) {
+  if (n == null || !isFinite(n)) return '—';
+  if (n >= 1e9) return `${(n / 1e9).toFixed(digits ?? 2)} GB`;
+  if (n >= 1e6) return `${Math.round(n / 1e6)} MB`;
+  if (n >= 1e3) return `${Math.round(n / 1e3)} KB`;
+  return `${n} B`;
+}
+function fmtDuration(sec) {
+  if (!isFinite(sec) || sec <= 0) return '';
+  if (sec < 60) return `${Math.ceil(sec)} s left`;
+  if (sec < 3600) return `${Math.ceil(sec / 60)} min left`;
+  return `${(sec / 3600).toFixed(1)} h left`;
+}
+function timeAgo(ts) {
+  const d = new Date(ts);
+  const now = new Date();
+  const sameDay = d.toDateString() === now.toDateString();
+  if (sameDay) return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+}
+
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(STORE_PREFIX + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(STORE_PREFIX + k, JSON.stringify(v)); return true; } catch { return false; } },
+  del(k) { try { localStorage.removeItem(STORE_PREFIX + k); } catch { /* ignore */ } },
+};
+
+/* ------------------------------------------------------------------ */
+/* State                                                               */
+/* ------------------------------------------------------------------ */
+const DEFAULT_SETTINGS = {
+  theme: 'system', creativity: 'balanced', length: 'balanced', language: 'auto',
+  think: false, ctx: 'auto', gpu: true, useProfile: true,
+};
+const S = {
+  screen: 'chat',
+  settings: { ...DEFAULT_SETTINGS, ...store.get('settings', {}) },
+  profile: { name: '', about: '', ...store.get('profile', {}) },
+  convs: store.get('convs', []),
+  saved: store.get('saved', []),
+  customModels: store.get('custom', []),
+  activeKey: store.get('activeKey', null),
+  currentId: null,
+  downloaded: new Map(),
+  device: null,
+  engine: PREVIEW ? 'preview' : 'boot',
+  engineInfo: null,
+  dl: null,
+  gen: null,
+  modelsTab: 'catalog',
+  filter: 'all',
+  sort: 'recommended',
+  query: '',
+  historyTab: 'chats',
+  historyQuery: '',
+  quant: {},
+  pendingImage: null,
+  images: new Map(),
+  installPrompt: null,
+  example: PREVIEW,
+};
+if (!Array.isArray(S.convs)) S.convs = [];
+if (!Array.isArray(S.saved)) S.saved = [];
+if (!Array.isArray(S.customModels)) S.customModels = [];
+// A reply that was still streaming when the app closed is marked as stopped.
+for (const c of S.convs) {
+  for (const m of c.messages || []) {
+    if (m.pending) { m.pending = false; if (!m.content && !m.reasoning) m.error = 'This reply was interrupted.'; else m.stopped = true; }
+    delete m.progress;
+  }
+}
+
+const saveConvs = () => {
+  S.convs.sort((a, b) => b.updatedAt - a.updatedAt);
+  if (S.convs.length > 150) S.convs.length = 150;
+  if (!store.set('convs', S.convs)) toast('Storage is full. Delete old chats in History.', 'risk');
+};
+const saveSettings = () => store.set('settings', S.settings);
+
+/* ------------------------------------------------------------------ */
+/* Model registry: catalog + user-added                                */
+/* ------------------------------------------------------------------ */
+function allEntries() {
+  const custom = S.customModels.map((c) => ({
+    id: c.id, name: c.name, maker: c.imported ? 'Imported from this device' : 'Added by you', repo: c.repo || null,
+    params: '', tags: ['chat', 'custom'], custom: true, imported: !!c.imported,
+    blurb: c.imported ? 'A model file you imported from this device.' : 'A model you added from a Hugging Face link.',
+    files: [{ quant: c.quant || 'GGUF', label: 'Your file', file: c.file, size: c.size || 0, url: c.url }],
+    mmprojUrl: c.mmprojUrl || undefined, langs: '—', license: 'See the model page', ctx: '—',
+  }));
+  return [...custom, ...CATALOG];
+}
+const entryById = (id) => allEntries().find((e) => e.id === id);
+const fileUrl = (entry, f) => f.url || hfUrl(f.repo || entry.repo, f.file);
+const mmprojUrlOf = (entry) => entry.mmprojUrl || (entry.mmproj ? hfUrl(entry.mmproj.repo || entry.repo, entry.mmproj.file) : undefined);
+
+function findByKey(key) {
+  for (const entry of allEntries()) {
+    for (let qi = 0; qi < entry.files.length; qi++) {
+      if (fileUrl(entry, entry.files[qi]) === key) return { entry, qi, file: entry.files[qi] };
+    }
+  }
+  return null;
+}
+function keyLabel(key) {
+  const hit = findByKey(key);
+  if (hit) return { name: hit.entry.name, quant: hit.file.quant };
+  const file = decodeURIComponent((key || '').split('/').pop() || 'Model');
+  return { name: file.replace(/\.gguf$/i, ''), quant: '' };
+}
+const activeEntry = () => (S.activeKey ? findByKey(S.activeKey)?.entry : null);
+
+/* ------------------------------------------------------------------ */
+/* Device                                                              */
+/* ------------------------------------------------------------------ */
+function supportsMem64() {
+  try { new WebAssembly.Memory({ address: 'i64', initial: 1n }); return true; } catch { return false; }
+}
+async function detectDevice() {
+  const ua = navigator.userAgent || '';
+  const d = {
+    name: '', ram: navigator.deviceMemory || null, cores: navigator.hardwareConcurrency || null,
+    free: null, usage: null, persisted: false,
+    gpu: !!navigator.gpu, isolated: !!window.crossOriginIsolated,
+    jspi: typeof WebAssembly !== 'undefined' && !!WebAssembly.Suspending, mem64: supportsMem64(),
+    mobile: /Android|iPhone|iPad|iPod|Mobile/i.test(ua),
+  };
+  try {
+    if (navigator.userAgentData?.getHighEntropyValues) {
+      const v = await navigator.userAgentData.getHighEntropyValues(['model', 'platform']);
+      if (v.model) d.name = v.model;
+      else if (v.platform === 'Android') d.name = 'Android phone';
+    }
+  } catch { /* ignore */ }
+  if (!d.name) {
+    if (/iPhone/.test(ua)) d.name = 'iPhone';
+    else if (/iPad/.test(ua)) d.name = 'iPad';
+    else if (/Android/.test(ua)) d.name = 'Android phone';
+    else if (/Macintosh|Mac OS/.test(ua)) d.name = 'Mac';
+    else if (/Windows/.test(ua)) d.name = 'Windows PC';
+    else if (/Linux/.test(ua)) d.name = 'Linux computer';
+    else d.name = 'This device';
+  }
+  try {
+    const est = await navigator.storage.estimate();
+    d.free = Math.max(0, (est.quota || 0) - (est.usage || 0));
+    d.usage = est.usage || 0;
+  } catch { /* ignore */ }
+  try { d.persisted = await navigator.storage.persisted(); } catch { /* ignore */ }
+  return d;
+}
+/** Rough size of model this device can run comfortably in a browser tab. */
+function memBudget(d = S.device) {
+  const ram = d?.ram || (d?.mobile ? 4 : 8);
+  if (!d?.mobile) {
+    if (ram >= 8) return d?.gpu ? 5.5e9 : 3e9;
+    if (ram >= 4) return 1.6e9;
+    return 0.8e9;
+  }
+  if (ram >= 8) return 1.35e9;
+  if (ram >= 6) return 1.1e9;
+  if (ram >= 4) return 0.85e9;
+  if (ram >= 2) return 0.5e9;
+  return 0.4e9;
+}
+/** Safari and older browsers run a slower 32-bit engine that can't open very large files. */
+const needsCompat = () => !!S.device && !(S.device.jspi && S.device.mem64);
+function fitOf(size) {
+  if (needsCompat() && size > COMPAT_MAX) return 'blocked';
+  const b = memBudget();
+  if (size <= b * 0.65) return 'smooth';
+  if (size <= b) return 'ok';
+  return 'heavy';
+}
+const FIT_LABEL = { smooth: 'Runs smoothly', ok: 'Runs, a bit slower', heavy: 'Heavy for this device', blocked: 'Needs Chrome or Edge' };
+const FIT_GROUP = { custom: 'Added by you', smooth: 'Runs smoothly here', ok: 'Runs here, a bit slower', heavy: 'Heavy for this device', blocked: 'Needs Chrome or Edge' };
+const FIT_RANK = { smooth: 0, ok: 1, heavy: 2, blocked: 3 };
+function pickId() {
+  const b = memBudget() * 0.8;
+  for (const id of PICK_ORDER) {
+    const e = CATALOG.find((x) => x.id === id);
+    if (e && totalSize(e, e.files[0]) <= b) return id;
+  }
+  return 'lfm2-350m';
+}
+function ctxSize() {
+  if (S.settings.ctx !== 'auto') return Number(S.settings.ctx);
+  const ram = S.device?.ram || 4;
+  return ram >= 8 ? 4096 : 2048;
+}
+
+/* ------------------------------------------------------------------ */
+/* Engine (wllama)                                                     */
+/* ------------------------------------------------------------------ */
+const quietLogger = {
+  debug: () => {},
+  log: () => {},
+  warn: (...a) => console.warn('[engine]', ...a),
+  error: (...a) => console.error('[engine]', ...a),
+};
+
+function engineCandidates() {
+  if (window.__APP_ENGINE_URLS__) return [window.__APP_ENGINE_URLS__];
+  return ENGINE_VERSIONS.map((v) => ({
+    version: v,
+    esm: `https://cdn.jsdelivr.net/npm/@wllama/wllama@${v}/esm/index.js`,
+    wasm: [
+      `https://cdn.jsdelivr.net/npm/@wllama/wllama@${v}/src/wasm/wllama.wasm`,
+      `https://cdn.jsdelivr.net/npm/@wllama/wllama@${v}/esm/wasm/wllama.wasm`,
+    ],
+    compatJs: `https://cdn.jsdelivr.net/npm/@wllama/wllama-compat@${v}/wasm/wllama.js`,
+    compatWasm: `https://cdn.jsdelivr.net/npm/@wllama/wllama-compat@${v}/wasm/wllama.wasm`,
+  }));
+}
+
+async function cachedFetch(url) {
+  let cache = null;
+  try {
+    cache = await caches.open(RUNTIME_CACHE);
+    const hit = await cache.match(url);
+    if (hit) return hit;
+  } catch { cache = null; }
+  const res = await fetch(url, { mode: 'cors', credentials: 'omit' });
+  if (!res.ok) throw new Error(`HTTP ${res.status} while fetching ${url}`);
+  if (cache) { try { await cache.put(url, res.clone()); } catch { /* quota */ } }
+  return res;
+}
+
+async function importEngineModule(c) {
+  // Load the engine script through the Cache API first, so it also works offline later.
+  try {
+    const res = await cachedFetch(c.esm);
+    const code = await res.text();
+    const blobUrl = URL.createObjectURL(new Blob([code], { type: 'text/javascript' }));
+    const lib = await import(/* @vite-ignore */ blobUrl);
+    if (lib && lib.Wllama) return lib;
+  } catch (e) { /* fall through to a direct import */ }
+  const lib = await import(/* @vite-ignore */ c.esm);
+  if (!lib || !lib.Wllama) throw new Error('Engine script did not load');
+  return lib;
+}
+
+const Engine = {
+  lib: null, urls: null, cm: null, mm: null, w: null,
+  loadedKey: null, info: null, wasmBlob: null, compat: null,
+  _libP: null, _chain: Promise.resolve(),
+
+  ensureLib() {
+    if (this.lib) return Promise.resolve(this.lib);
+    if (!this._libP) {
+      this._libP = (async () => {
+        let lib = TEST_ENGINE;
+        let urls = { version: 'test' };
+        if (!lib) {
+          let lastErr = null;
+          for (const c of engineCandidates()) {
+            try { lib = await importEngineModule(c); urls = c; break; } catch (e) { lastErr = e; }
+          }
+          if (!lib) throw lastErr || new Error('Engine unavailable');
+        }
+        this.lib = lib;
+        this.urls = urls;
+        this.cm = new lib.CacheManager();
+        this.mm = new lib.ModelManager({ cacheManager: this.cm, logger: quietLogger, parallelDownloads: 3, allowOffline: true });
+        return lib;
+      })().catch((e) => { this._libP = null; throw e; });
+    }
+    return this._libP;
+  },
+
+  async wasmUrl() {
+    if (this.wasmBlob) return this.wasmBlob;
+    const list = Array.isArray(this.urls.wasm) ? this.urls.wasm : [this.urls.wasm];
+    let lastErr = null;
+    for (const u of list) {
+      if (!u) continue;
+      try {
+        const res = await cachedFetch(u);
+        const buf = await res.arrayBuffer();
+        this.wasmBlob = URL.createObjectURL(new Blob([buf], { type: 'application/wasm' }));
+        return this.wasmBlob;
+      } catch (e) { lastErr = e; }
+    }
+    throw lastErr || new Error('Engine file missing');
+  },
+
+  async compatConfig() {
+    const needCompat = !(S.device?.jspi && S.device?.mem64);
+    if (!needCompat || !this.urls.compatJs) return null;
+    if (this.compat) return this.compat;
+    const [jsRes, wasmRes] = await Promise.all([cachedFetch(this.urls.compatJs), cachedFetch(this.urls.compatWasm)]);
+    const code = await jsRes.text();
+    const wasm = URL.createObjectURL(new Blob([await wasmRes.arrayBuffer()], { type: 'application/wasm' }));
+    this.compat = { worker: { code }, wasm };
+    return this.compat;
+  },
+
+  /** Download the engine files ahead of time so the first offline launch works. */
+  async warm() {
+    await this.ensureLib();
+    if (TEST_ENGINE) return;
+    await this.wasmUrl();
+    await this.compatConfig();
+  },
+
+  async listModels() {
+    await this.ensureLib();
+    return this.mm.getModels();
+  },
+
+  async download(source, opts) {
+    await this.ensureLib();
+    return this.mm.downloadModel(source, opts);
+  },
+
+  async cleanup(urls) {
+    await this.ensureLib();
+    for (const u of urls) { try { await this.cm.delete(u); } catch { /* ignore */ } }
+  },
+
+  async remove(key) {
+    await this.ensureLib();
+    if (this.loadedKey === key) await this.unload();
+    const models = await this.mm.getModels({ includeInvalid: true });
+    const m = models.find((x) => x.url === key);
+    if (m) await m.remove();
+    else await this.cleanup([key]);
+  },
+
+  async importFile(url, file, meta, onProgress) {
+    await this.ensureLib();
+    const name = await this.cm.getNameFromURL(url);
+    let loaded = 0;
+    const total = file.size;
+    const counter = new TransformStream({
+      transform(chunk, ctl) { loaded += chunk.byteLength; onProgress?.(loaded, total); ctl.enqueue(chunk); },
+    });
+    await this.cm.write(name, file.stream().pipeThrough(counter), { originalURL: url, originalSize: total, etag: 'local', ...meta });
+  },
+
+  load(key, opts) {
+    const run = () => this._load(key, opts);
+    this._chain = this._chain.then(run, run);
+    return this._chain;
+  },
+
+  async _load(key, { nCtx, gpu }) {
+    await this.ensureLib();
+    if (this.loadedKey === key && this.w) return this.info;
+    await this.unload();
+    const models = await this.mm.getModels();
+    const model = models.find((m) => m.url === key);
+    if (!model) throw Object.assign(new Error('This model is not on this device yet.'), { code: 'missing' });
+
+    const attempts = [];
+    const jinjaFirst = { jinja: true, reasoning_format: 'deepseek' };
+    if (gpu) attempts.push({ gpu: true, ...jinjaFirst });
+    attempts.push({ gpu: false, ...jinjaFirst });
+    attempts.push({ gpu: false });
+
+    let lastErr = null;
+    for (const a of attempts) {
+      const w = await this.create();
+      try {
+        await w.loadModel(model, {
+          n_ctx: nCtx,
+          n_batch: 256,
+          ctx_shift: true,
+          ...(a.gpu ? {} : { n_gpu_layers: 0 }),
+          ...(a.jinja ? { jinja: true, reasoning_format: a.reasoning_format } : {}),
+        });
+        this.w = w;
+        this.loadedKey = key;
+        const safe = (fn, d) => { try { return fn(); } catch { return d; } };
+        this.info = {
+          gpu: a.gpu && !!navigator.gpu,
+          threads: safe(() => w.getNumThreads(), 1),
+          multithread: safe(() => w.isMultithread(), false),
+          image: safe(() => w.supportInputModality('image'), false),
+          nCtx,
+          engine: this.urls.version,
+        };
+        if (gpu && !a.gpu) store.set('gpuFallback', true);
+        return this.info;
+      } catch (e) {
+        lastErr = e;
+        try { await w.exit(); } catch { /* ignore */ }
+        if (/memory|OOM|allocation|out of bounds/i.test(String(e?.message || e))) break;
+      }
+    }
+    throw lastErr || new Error('Could not start the model');
+  },
+
+  async create() {
+    const lib = await this.ensureLib();
+    let wasm = 'test.wasm';
+    if (!TEST_ENGINE) {
+      try { wasm = await this.wasmUrl(); } catch (e) {
+        throw Object.assign(new Error(navigator.onLine
+          ? `${APP.name} couldn’t download its AI engine. Check your connection and try again.`
+          : `${APP.name} needs internet one more time to finish setting up its AI engine.`), { code: 'engine' });
+      }
+    }
+    const paths = { default: wasm };
+    const w = new lib.Wllama(paths, { cacheManager: this.cm, modelManager: this.mm, logger: quietLogger, allowOffline: true });
+    if (!TEST_ENGINE) {
+      const compat = await this.compatConfig().catch(() => null);
+      if (compat) w.setCompat(compat);
+    }
+    return w;
+  },
+
+  async unload() {
+    const w = this.w;
+    this.w = null;
+    this.loadedKey = null;
+    this.info = null;
+    if (w) { try { await w.exit(); } catch { /* ignore */ } }
+  },
+
+  async chat({ messages, params, signal, onDelta, onProgress }) {
+    if (!this.w) throw new Error('No model is loaded');
+    let text = '';
+    let reasoning = '';
+    let timings = null;
+    let finish = null;
+    let pieces = 0;
+    let firstAt = 0;
+    const t0 = performance.now();
+    await this.w.createChatCompletion({
+      ...params,
+      messages,
+      stream: true,
+      return_progress: true,
+      abortSignal: signal,
+      onData: (chunk) => {
+        if (chunk?.prompt_progress) onProgress?.(chunk.prompt_progress);
+        if (chunk?.timings) timings = chunk.timings;
+        const ch = chunk?.choices?.[0];
+        if (!ch) return;
+        const d = ch.delta || {};
+        let changed = false;
+        if (d.reasoning_content) { reasoning += d.reasoning_content; changed = true; }
+        if (d.content) { text += d.content; changed = true; }
+        if (changed) {
+          pieces++;
+          if (!firstAt) firstAt = performance.now();
+          onDelta?.(text, reasoning);
+        }
+        if (ch.finish_reason) finish = ch.finish_reason;
+      },
+    });
+    const secs = (performance.now() - (firstAt || t0)) / 1000;
+    const tps = timings?.predicted_per_second || (secs > 0 ? pieces / secs : 0);
+    const tokens = timings?.predicted_n || pieces;
+    return { text, reasoning, finish, tps, tokens, secs: (performance.now() - t0) / 1000 };
+  },
+};
+
+/* ------------------------------------------------------------------ */
+/* Screen wake lock (keeps downloads and replies going)                */
+/* ------------------------------------------------------------------ */
+const Wake = {
+  lock: null, holds: 0,
+  async on() {
+    this.holds++;
+    if (this.lock || !('wakeLock' in navigator)) return;
+    try {
+      this.lock = await navigator.wakeLock.request('screen');
+      this.lock.addEventListener('release', () => { this.lock = null; });
+    } catch { this.lock = null; }
+  },
+  async off() {
+    this.holds = Math.max(0, this.holds - 1);
+    if (!this.holds && this.lock) { try { await this.lock.release(); } catch { /* ignore */ } this.lock = null; }
+  },
+};
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && Wake.holds > 0 && !Wake.lock && 'wakeLock' in navigator) {
+    navigator.wakeLock.request('screen').then((l) => { Wake.lock = l; }).catch(() => {});
+  }
+});
+
+/* ------------------------------------------------------------------ */
+/* Markdown (safe subset)                                              */
+/* ------------------------------------------------------------------ */
+function inlineMd(text) {
+  const slots = [];
+  const put = (html) => `\u0000${slots.push(html) - 1}\u0000`;
+  let s = esc(text);
+  s = s.replace(/`([^`\n]+)`/g, (_, c) => put(`<code>${c}</code>`));
+  s = s.replace(/\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)/g, (_, t, u) => put(`<a href="${u}" target="_blank" rel="noopener noreferrer">${t}</a>`));
+  s = s.replace(/(https?:\/\/[^\s<]+[^\s<.,;:!?)\]'"])/g, (u) => put(`<a href="${u}" target="_blank" rel="noopener noreferrer">${u}</a>`));
+  s = s.replace(/\*\*([^*\n][^*]*?)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/__([^_\n][^_]*?)__/g, '<strong>$1</strong>');
+  s = s.replace(/(^|[^*\w])\*([^*\s][^*\n]*?)\*(?!\*)/g, '$1<em>$2</em>');
+  s = s.replace(/(^|[^\w])_([^_\s][^_\n]*?)_(?!\w)/g, '$1<em>$2</em>');
+  s = s.replace(/~~([^~\n]+)~~/g, '<del>$1</del>');
+  return s.replace(/\u0000(\d+)\u0000/g, (_, i) => slots[+i]);
+}
+function codeBlock(code, lang) {
+  return `<div class="codeblock"><div class="code-head"><span>${esc(lang || 'code')}</span><button type="button" class="icon-btn ghost" style="width:30px;height:30px" data-action="copy-code" aria-label="Copy code">${icon('copy', 'sm')}</button></div><pre><code>${esc(code)}</code></pre></div>`;
+}
+function splitRow(line) {
+  let l = line.trim();
+  if (l.startsWith('|')) l = l.slice(1);
+  if (l.endsWith('|')) l = l.slice(0, -1);
+  return l.split('|').map((c) => c.trim());
+}
+function md(src) {
+  const lines = String(src || '').replace(/\r\n?/g, '\n').split('\n');
+  let html = '';
+  let para = [];
+  const flush = () => {
+    if (para.length) { html += `<p>${inlineMd(para.join('\n')).replace(/\n/g, '<br>')}</p>`; para = []; }
+  };
+  const listRe = /^(\s*)([-*+•]|\d{1,3}[.)])\s+(.*)$/;
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    const fence = line.match(/^\s*(```|~~~)\s*([\w+#.-]*)\s*$/);
+    if (fence) {
+      flush();
+      const buf = [];
+      i++;
+      while (i < lines.length && !/^\s*(```|~~~)\s*$/.test(lines[i])) { buf.push(lines[i]); i++; }
+      i++;
+      html += codeBlock(buf.join('\n'), fence[2]);
+      continue;
+    }
+    const h = line.match(/^(#{1,6})\s+(.*)$/);
+    if (h) { flush(); const lv = h[1].length <= 2 ? 3 : 4; html += `<h${lv}>${inlineMd(h[2])}</h${lv}>`; i++; continue; }
+    if (/^\s*(-{3,}|\*{3,}|_{3,})\s*$/.test(line)) { flush(); html += '<hr>'; i++; continue; }
+    if (line.includes('|') && i + 1 < lines.length && /^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/.test(lines[i + 1])) {
+      flush();
+      const head = splitRow(line);
+      i += 2;
+      const rows = [];
+      while (i < lines.length && lines[i].includes('|') && lines[i].trim()) { rows.push(splitRow(lines[i])); i++; }
+      html += `<div class="table-wrap"><table><thead><tr>${head.map((c) => `<th>${inlineMd(c)}</th>`).join('')}</tr></thead><tbody>${rows.map((r) => `<tr>${head.map((_, k) => `<td>${inlineMd(r[k] ?? '')}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+      continue;
+    }
+    if (/^\s*>/.test(line)) {
+      flush();
+      const buf = [];
+      while (i < lines.length && /^\s*>/.test(lines[i])) { buf.push(lines[i].replace(/^\s*>\s?/, '')); i++; }
+      html += `<blockquote>${md(buf.join('\n'))}</blockquote>`;
+      continue;
+    }
+    const lm = line.match(listRe);
+    if (lm) {
+      flush();
+      const ordered = /\d/.test(lm[2]);
+      const start = ordered ? parseInt(lm[2], 10) : 1;
+      const items = [];
+      while (i < lines.length) {
+        const m = lines[i].match(listRe);
+        if (m && (/\d/.test(m[2]) === ordered || m[1].length > 0)) { items.push(m[3]); i++; continue; }
+        if (lines[i].trim() && /^\s{2,}\S/.test(lines[i]) && items.length) { items[items.length - 1] += '\n' + lines[i].trim(); i++; continue; }
+        break;
+      }
+      const tag = ordered ? 'ol' : 'ul';
+      html += `<${tag}${ordered && start !== 1 ? ` start="${start}"` : ''}>${items.map((t) => `<li>${inlineMd(t).replace(/\n/g, '<br>')}</li>`).join('')}</${tag}>`;
+      continue;
+    }
+    if (!line.trim()) { flush(); i++; continue; }
+    para.push(line);
+    i++;
+  }
+  flush();
+  return html;
+}
+
+/* Split <think> blocks for engines that do not separate reasoning. */
+function splitThink(raw, alwaysThinks) {
+  const s = raw || '';
+  const open = s.indexOf('<think>');
+  if (open !== -1) {
+    const close = s.indexOf('</think>', open);
+    if (close === -1) return { answer: s.slice(0, open).trim(), thought: s.slice(open + 7), thinking: true };
+    return { answer: (s.slice(0, open) + s.slice(close + 8)).trim(), thought: s.slice(open + 7, close), thinking: false };
+  }
+  const close = s.indexOf('</think>');
+  if (close !== -1) return { answer: s.slice(close + 8).trim(), thought: s.slice(0, close), thinking: false };
+  if (alwaysThinks) return { answer: '', thought: s, thinking: true };
+  return { answer: s, thought: '', thinking: false };
+}
+
+/* ------------------------------------------------------------------ */
+/* Torch mark                                                          */
+/* ------------------------------------------------------------------ */
+const FLAME_OUTER = 'M32 3.5C36.6 10.4 45 16.6 45 26.2C45 32.6 39.3 36.5 32 36.5C24.7 36.5 19 32.6 19 26.2C19 20.6 22.3 16.9 25.4 13.4C25.9 17.6 27.7 19.8 30 20.8C29 14.8 29.7 8.8 32 3.5Z';
+const FLAME_INNER = 'M32.4 15.2C35.3 19.6 38.6 22.7 38.6 27.4C38.6 31.4 35.7 34 32 34C28.3 34 25.4 31.4 25.4 27.7C25.4 24.7 27.4 22.6 29 21C29.4 23.6 30.4 24.9 31.7 25.5C31 21.8 31.2 18.3 32.4 15.2Z';
+const TORCH_BASE = '<path d="M24.5 35.2h15l-1.6 4.2h-11.8z" fill="#7a5524"/><rect x="26.6" y="38.6" width="10.8" height="22" rx="2.6" fill="url(#t-bamboo)"/><path d="M26.6 46.6h10.8M26.6 54.2h10.8" stroke="#7a5524" stroke-width="1.6"/>';
+function torch(cls = '', glow = true) {
+  return `<svg class="torch ${cls}" viewBox="0 0 64 64" aria-hidden="true">${glow ? '<circle class="glow" cx="32" cy="24" r="22" fill="url(#t-glow)"/>' : ''}<g class="flame-group"><path d="${FLAME_OUTER}" fill="url(#t-outer)"/><path d="${FLAME_INNER}" fill="url(#t-inner)"/></g>${TORCH_BASE}</svg>`;
+}
+function torchFill(id, p) {
+  const h = Math.max(0, Math.min(1, p)) * 34;
+  return `<svg class="torch" viewBox="0 0 64 64" aria-hidden="true"><defs><clipPath id="clip-${id}"><rect class="fill-rect" x="0" y="${(36.6 - h).toFixed(2)}" width="64" height="${(h + 0.5).toFixed(2)}"/></clipPath></defs><path d="${FLAME_OUTER}" fill="none" stroke="currentColor" stroke-opacity=".35" stroke-width="1.4"/><g clip-path="url(#clip-${id})"><path d="${FLAME_OUTER}" fill="url(#t-outer)"/><path d="${FLAME_INNER}" fill="url(#t-inner)"/></g>${TORCH_BASE}</svg>`;
+}
+
+/* ------------------------------------------------------------------ */
+/* Toasts & sheets                                                     */
+/* ------------------------------------------------------------------ */
+function toast(msg, tone = '') {
+  const root = $('#toasts');
+  if (!root) return;
+  const el = document.createElement('div');
+  el.className = `toast ${tone}`;
+  el.textContent = msg;
+  root.appendChild(el);
+  while (root.children.length > 2) root.firstElementChild.remove();
+  setTimeout(() => el.remove(), tone === 'risk' ? 5200 : 3200);
+}
+
+let sheetHandlers = {};
+let sheetReturnFocus = null;
+function openSheet({ title, body = '', actions = '', onConfirm, onOpen, dismissable = true }) {
+  const layer = $('#sheet-layer');
+  sheetHandlers = { onConfirm, dismissable };
+  sheetReturnFocus = document.activeElement;
+  layer.innerHTML = `<div class="sheet-scrim" data-action="${dismissable ? 'close-sheet' : ''}"></div>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+      <div class="sheet-grip"></div>
+      <div class="sheet-head"><h2 id="sheet-title">${title}</h2>${dismissable ? `<button type="button" class="icon-btn ghost" data-action="close-sheet" aria-label="Close">${icon('x')}</button>` : ''}</div>
+      <div class="sheet-body">${body}</div>
+      ${actions ? `<div class="sheet-actions">${actions}</div>` : ''}
+    </div>`;
+  layer.hidden = false;
+  onOpen?.(layer);
+  const first = layer.querySelector('[data-autofocus]') || layer.querySelector('.sheet button:not([data-action="close-sheet"]), .sheet input, .sheet a');
+  first?.focus({ preventScroll: true });
+}
+function closeSheet() {
+  const layer = $('#sheet-layer');
+  if (layer.hidden) return;
+  layer.hidden = true;
+  layer.innerHTML = '';
+  sheetHandlers = {};
+  sheetReturnFocus?.focus?.({ preventScroll: true });
+}
+function confirmSheet({ title, body, confirm = 'Confirm', tone = 'danger', onConfirm }) {
+  openSheet({
+    title, body: `<p>${body}</p>`, onConfirm,
+    actions: `<button type="button" class="btn ${tone === 'danger' ? 'danger' : 'primary'} block" data-action="sheet-confirm">${esc(confirm)}</button><button type="button" class="btn ghost block" data-action="close-sheet">Cancel</button>`,
+  });
+}
+function previewNotice(kind = 'download') {
+  openSheet({
+    title: 'This is a design preview',
+    body: `<p>${kind === 'chat' ? 'Chatting' : 'Downloading models'} is switched off in this preview, because the preview can’t reach Hugging Face or run the AI engine.</p>
+      <p>Publish the app on GitHub Pages using the steps in the README. On your own site, models download once and then work with no internet.</p>`,
+    actions: '<button type="button" class="btn primary block" data-action="close-sheet">Got it</button>',
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* Navigation                                                          */
+/* ------------------------------------------------------------------ */
+const SCREENS = ['chat', 'models', 'history', 'you'];
+function go(screen, { push = true } = {}) {
+  if (!SCREENS.includes(screen)) screen = 'chat';
+  S.screen = screen;
+  for (const id of SCREENS) $(`#screen-${id}`).classList.toggle('is-active', id === screen);
+  document.querySelectorAll('[data-nav]').forEach((b) => {
+    if (b.dataset.nav === screen) b.setAttribute('aria-current', 'page');
+    else b.removeAttribute('aria-current');
+  });
+  if (push) { try { history.replaceState(null, '', screen === 'chat' ? location.pathname + location.search : `#${screen}`); } catch { /* ignore */ } }
+  if (screen === 'models') renderModels();
+  if (screen === 'history') renderHistory();
+  if (screen === 'you') renderYou();
+  if (screen === 'chat') { renderChat(); }
+}
+window.addEventListener('hashchange', () => go((location.hash || '#chat').slice(1), { push: false }));
+
+/* ------------------------------------------------------------------ */
+/* Chat screen                                                         */
+/* ------------------------------------------------------------------ */
+const currentConv = () => S.convs.find((c) => c.id === S.currentId) || null;
+
+function statusInfo() {
+  if (PREVIEW) return { text: 'Preview', tone: 'warn' };
+  if (S.gen) return { text: 'Thinking…', tone: 'busy' };
+  if (S.engine === 'boot') return { text: 'Starting…', tone: 'busy' };
+  if (S.engine === 'unavailable') return { text: 'Needs internet once', tone: 'warn' };
+  if (S.engine === 'loading') return { text: 'Waking up…', tone: 'busy' };
+  if (S.engine === 'ready') return { text: navigator.onLine ? 'Offline-ready' : 'Offline · ready', tone: 'ok' };
+  if (S.engine === 'error') return { text: 'Model didn’t start', tone: 'warn' };
+  if (!S.downloaded.size) return { text: 'No model yet', tone: '' };
+  return { text: 'Model not loaded', tone: '' };
+}
+
+function renderChrome() {
+  const st = statusInfo();
+  const pill = $('#status-pill');
+  pill.textContent = st.text;
+  pill.dataset.tone = st.tone;
+  const chip = $('#model-chip');
+  const lbl = S.activeKey && (S.downloaded.has(S.activeKey) || PREVIEW) ? keyLabel(S.activeKey) : null;
+  chip.dataset.state = S.engine === 'ready' ? 'ready' : S.engine === 'loading' ? 'loading' : 'idle';
+  chip.innerHTML = `<span class="dot"></span><span class="label">${lbl ? `${esc(lbl.name)}<span class="mono">${esc(lbl.quant)}</span>` : 'Choose a model'}</span>${icon('chevron', 'sm')}`;
+  $('#topbar-torch').innerHTML = torch(S.gen ? 'is-thinking' : 'is-idle');
+  const rail = $('#rail-torch');
+  if (rail) rail.innerHTML = torch(S.gen ? 'is-thinking' : 'is-idle');
+  renderComposer();
+}
+
+function renderComposer() {
+  const entry = activeEntry();
+  const send = $('#btn-send');
+  const ta = $('#prompt');
+  const busy = !!S.gen;
+  send.classList.toggle('is-stop', busy);
+  send.innerHTML = busy ? icon('stop') : icon('send');
+  send.setAttribute('aria-label', busy ? 'Stop' : 'Send');
+  const hasModel = PREVIEW || S.downloaded.size > 0;
+  send.disabled = !busy && !hasModel;
+  ta.placeholder = hasModel ? (S.gen ? `${APP.name} is replying…` : `Message ${APP.name}…`) : 'Download a model to start chatting';
+  const thinkBtn = $('#btn-think');
+  const canToggle = entry && (entry.think === 'qwen3' || entry.think === 'smollm3');
+  thinkBtn.hidden = !canToggle;
+  thinkBtn.setAttribute('aria-pressed', String(!!S.settings.think));
+  const imgBtn = $('#btn-image');
+  imgBtn.hidden = !(Engine.info?.image || (PREVIEW && entry?.tags.includes('vision')));
+  const ap = $('#attach-preview');
+  if (S.pendingImage) {
+    ap.hidden = false;
+    ap.innerHTML = `<img src="${S.pendingImage.thumb}" alt="Attached photo"><button type="button" class="chip-btn" data-action="remove-image">${icon('x', 'sm')} Remove</button>`;
+  } else { ap.hidden = true; ap.innerHTML = ''; }
+}
+
+function heroHtml() {
+  const hasModels = S.downloaded.size > 0;
+  if (!hasModels && !PREVIEW) {
+    const offline = S.engine === 'unavailable';
+    return `<div class="hero">
+      ${torch('is-idle')}
+      <h1 class="hero-title">Light it once. <em>Use it anywhere.</em></h1>
+      <p class="hero-sub">${offline
+        ? `${APP.name} needs internet one time to set up its engine and download a model. After that it works with no signal.`
+        : `Download an AI model one time. After that, ${APP.name} answers even with no signal, and your chats stay on this device.`}</p>
+      <div class="chip-row"><span class="chip">${icon('wifi-off', 'sm')} Works offline</span><span class="chip">${icon('lock', 'sm')} Private by default</span><span class="chip">${icon('phone', 'sm')} Runs on your phone</span></div>
+      <button type="button" class="btn primary" data-nav="models">${icon('models', 'sm')} Choose a model</button>
+      <ol class="steps"><li><b>Pick</b>a model</li><li><b>Download</b>once, on Wi-Fi</li><li><b>Chat</b>even offline</li></ol>
+    </div>`;
+  }
+  const entry = activeEntry();
+  const waking = S.engine === 'loading';
+  if (S.engine === 'error' && !PREVIEW) {
+    return `<div class="hero">
+      ${torch('')}
+      <h1 class="hero-title">The torch didn’t light.</h1>
+      <p class="hero-sub">${esc(S.engineError || 'The model didn’t start.')}</p>
+      <div class="chip-row"><button type="button" class="btn primary" data-action="retry-load">${icon('refresh', 'sm')} Try again</button><button type="button" class="btn" data-nav="models">See models</button></div>
+    </div>`;
+  }
+  return `<div class="hero">
+    ${torch(waking ? 'is-thinking' : 'is-idle')}
+    <h1 class="hero-title">${waking ? 'Waking up…' : 'Ready when you are.'}</h1>
+    <p class="hero-sub">${waking
+      ? `Loading ${esc(entry?.name || 'your model')} into memory. This takes a few seconds.`
+      : `Ask ${esc(entry?.name || 'your model')} anything. No internet needed.`}</p>
+    <div class="suggestions">${SUGGESTIONS.map((s) => `<button type="button" class="suggestion" data-action="suggest" data-text="${esc(s.t)}"><span>${esc(s.k)}</span>${esc(s.t)}</button>`).join('')}</div>
+  </div>`;
+}
+
+function aiBodyHtml(m) {
+  const entry = m.key ? findByKey(m.key)?.entry : null;
+  let answer = m.content || '';
+  let thought = m.reasoning || '';
+  let thinking = false;
+  if (!thought) {
+    const sp = splitThink(answer, entry?.think === 'always' && m.pending);
+    answer = sp.answer; thought = sp.thought; thinking = sp.thinking && m.pending;
+  } else if (m.pending && !answer) thinking = true;
+  let html = '';
+  if (thought.trim()) {
+    const label = thinking ? 'Thinking…' : (m.thinkSecs ? `Thought for ${Math.max(1, Math.round(m.thinkSecs))} s` : 'Reasoning');
+    html += `<details class="think"${thinking ? ' open' : ''}><summary>${icon('think', 'sm')} ${label}${icon('chevron', 'sm chev')}</summary><div class="think-body">${esc(thought.trim())}</div></details>`;
+  }
+  if (answer) {
+    let body = md(answer);
+    if (m.pending) body = body.endsWith('</p>') ? body.slice(0, -4) + '<span class="cursor"></span></p>' : body + '<span class="cursor"></span>';
+    html += `<div class="body md">${body}</div>`;
+  } else if (m.pending && !thinking) {
+    const p = m.progress;
+    html += `<div class="typing">${p ? `Reading your message… ${Math.round(p * 100)}%` : 'Getting ready…'}</div>`;
+  }
+  if (m.error) html += `<div class="error-box">${esc(m.error)}</div>`;
+  if (m.stopped && !m.error) html += '<p class="typing" style="font-size:.75rem">Stopped</p>';
+  return html;
+}
+
+function msgHtml(m, example = false) {
+  if (m.role === 'user') {
+    return `<div class="msg user" data-id="${m.id}"><div class="bubble">${m.image ? `<img src="${m.image}" alt="Photo you sent">` : ''}${esc(m.content)}</div></div>`;
+  }
+  const lbl = m.key ? keyLabel(m.key) : { name: m.model || '' };
+  const saved = S.saved.some((x) => x.msgId === m.id);
+  const foot = m.pending || example ? '' : `<div class="msg-foot">
+      <button type="button" class="icon-btn ghost" data-action="copy-msg" data-id="${m.id}" aria-label="Copy answer">${icon('copy', 'sm')}</button>
+      <button type="button" class="icon-btn ghost" data-action="save-msg" data-id="${m.id}" aria-label="${saved ? 'Remove from saved' : 'Save answer'}" aria-pressed="${saved}">${icon(saved ? 'bookmark-fill' : 'bookmark', 'sm')}</button>
+      <button type="button" class="icon-btn ghost" data-action="retry-msg" data-id="${m.id}" aria-label="Answer again">${icon('refresh', 'sm')}</button>
+      ${m.stats ? `<span class="stats mono">${m.stats.tps ? `${m.stats.tps.toFixed(1)} tok/s · ` : ''}${m.stats.tokens} tokens</span>` : ''}
+    </div>`;
+  return `<div class="msg ai" data-id="${m.id}">
+    <div class="msg-head">${torch(m.pending ? 'is-thinking' : '', false)}<b>${esc(APP.name)}</b><span class="mono">${esc(lbl.name)}</span></div>
+    <div class="ai-body">${aiBodyHtml(m)}</div>${foot}</div>`;
+}
+
+const EXAMPLE_CHAT = [
+  { id: 'ex1', role: 'user', content: 'Pwede mo ba akong tulungan mag-review para sa Civil Service Exam? Bigyan mo ako ng 3 tanong sa analogy.' },
+  {
+    id: 'ex2', role: 'assistant', key: hfUrl('unsloth/Qwen3-1.7B-GGUF', 'Qwen3-1.7B-Q4_K_M.gguf'),
+    content: 'Sige! Heto ang 3 practice questions sa **analogy**:\n\n1. **Aklat : Aklatan :: Gamot : ____**\n   a) Doktor  b) Botika  c) Sakit  d) Ospital\n2. **Kamay : Guwantes :: Paa : ____**\n   a) Sapatos  b) Daliri  c) Tuhod  d) Sahig\n3. **Init : Lamig :: Liwanag : ____**\n   a) Araw  b) Dilim  c) Ilaw  d) Sulo\n\n**Sagot:** 1-b, 2-a, 3-b\n\nTip: Alamin muna ang relasyon ng unang pares (lugar, gamit, o kasalungat), saka ilapat sa pangalawa.',
+  },
+];
+
+let stickToBottom = true;
+function renderThread() {
+  const root = $('#thread-inner');
+  const conv = currentConv();
+  if (conv && conv.messages.length) {
+    root.innerHTML = conv.messages.map((m) => msgHtml(m)).join('');
+    if (stickToBottom) scrollThread();
+  } else if (S.example) {
+    root.innerHTML = `<p class="example-note">Example chat · shows how answers look</p>${EXAMPLE_CHAT.map((m) => msgHtml(m, true)).join('')}`;
+    $('#thread').scrollTop = 0;
+  } else {
+    root.innerHTML = heroHtml();
+    $('#thread').scrollTop = 0;
+  }
+}
+function scrollThread() {
+  const t = $('#thread');
+  t.scrollTop = t.scrollHeight;
+}
+$('#thread')?.addEventListener('scroll', () => {
+  const t = $('#thread');
+  stickToBottom = t.scrollHeight - t.scrollTop - t.clientHeight < 80;
+}, { passive: true });
+
+let paintMsg = null;
+let paintPending = false;
+const userToggled = new Set();
+function paintStreaming(m) {
+  paintMsg = m;
+  if (paintPending) return;
+  paintPending = true;
+  requestAnimationFrame(() => {
+    paintPending = false;
+    const msg = paintMsg;
+    const el = msg && document.querySelector(`.msg[data-id="${msg.id}"] .ai-body`);
+    if (!el) return;
+    const prev = el.querySelector('details.think');
+    const prevOpen = prev ? prev.open : null;
+    el.innerHTML = aiBodyHtml(msg);
+    const now = el.querySelector('details.think');
+    if (now && prevOpen !== null && userToggled.has(msg.id)) now.open = prevOpen;
+    if (stickToBottom) scrollThread();
+  });
+}
+
+function renderChat() {
+  renderChrome();
+  renderThread();
+}
+
+/* ------------------------------------------------------------------ */
+/* Sending & generation                                                */
+/* ------------------------------------------------------------------ */
+function systemPrompt(entry) {
+  const s = S.settings;
+  const lines = [];
+  if (entry?.think === 'smollm3') lines.push(s.think ? '/think' : '/no_think');
+  lines.push(`You are ${APP.name}, an offline AI app developed by ${APP.developer}. You run on the ${entry?.name || 'local'} model entirely on the user's device, with no internet.`);
+  lines.push('Be accurate, warm and clear. If you are not sure about something, say so instead of guessing.');
+  lines.push({
+    auto: 'Reply in the same language the user writes in (English, Filipino or Taglish).',
+    en: 'Always reply in English.',
+    fil: 'Always reply in Filipino (Tagalog).',
+    taglish: 'Reply in natural Taglish, the everyday mix of Tagalog and English used in the Philippines.',
+  }[s.language] || '');
+  lines.push({
+    short: 'Keep replies short: a few sentences or a short list.',
+    balanced: 'Keep replies focused. Use lists or headings only when they help.',
+    detailed: 'Give thorough, well-organized answers with steps and examples when useful.',
+  }[s.length] || '');
+  if (s.useProfile && (S.profile.name || S.profile.about)) {
+    lines.push(`About the user (use only when relevant): ${S.profile.name ? `Name: ${S.profile.name}. ` : ''}${S.profile.about || ''}`.trim());
+  }
+  lines.push(`Today is ${new Date().toLocaleDateString('en-PH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}.`);
+  return lines.filter(Boolean).join('\n');
+}
+
+function thinkActive(entry) {
+  if (!entry) return false;
+  if (entry.think === 'always') return true;
+  return (entry.think === 'qwen3' || entry.think === 'smollm3') && !!S.settings.think;
+}
+
+function samplingFor(entry) {
+  let b = { temperature: 0.7, top_p: 0.9, top_k: 40, min_p: 0.05, ...(entry?.sampling || {}) };
+  if (entry?.think === 'qwen3') {
+    b = S.settings.think ? { temperature: 0.6, top_p: 0.95, top_k: 20, min_p: 0 } : { temperature: 0.7, top_p: 0.8, top_k: 20, min_p: 0 };
+  }
+  const mult = { precise: 0.55, balanced: 1, creative: 1.35 }[S.settings.creativity] || 1;
+  const nCtx = Engine.info?.nCtx || ctxSize();
+  const base = { short: 400, balanced: 1024, detailed: 2048 }[S.settings.length] || 1024;
+  const maxTokens = Math.max(256, Math.min(base + (thinkActive(entry) ? 1536 : 0), nCtx - 256));
+  const p = {
+    temperature: +Math.min(1.5, Math.max(0.05, b.temperature * mult)).toFixed(2),
+    top_p: b.top_p, top_k: b.top_k, min_p: b.min_p, max_tokens: maxTokens,
+  };
+  if (b.repeat_penalty) p.repeat_penalty = b.repeat_penalty;
+  if (entry?.think === 'qwen3' || entry?.think === 'smollm3') p.chat_template_kwargs = { enable_thinking: !!S.settings.think };
+  Object.keys(p).forEach((k) => p[k] === undefined && delete p[k]);
+  return p;
+}
+
+function buildMessages(conv, upTo, entry) {
+  const nCtx = Engine.info?.nCtx || ctxSize();
+  const sys = systemPrompt(entry);
+  const params = samplingFor(entry);
+  let budget = Math.max(400, nCtx - params.max_tokens - Math.ceil(sys.length / 3) - 64);
+  const hist = [];
+  const msgs = conv.messages.slice(0, conv.messages.indexOf(upTo));
+  for (let i = msgs.length - 1; i >= 0; i--) {
+    const m = msgs[i];
+    if (m.role === 'assistant' && (m.error || !m.content)) continue;
+    let text = m.role === 'assistant' ? splitThink(m.content).answer || m.content : m.content;
+    const cost = Math.ceil(text.length / 3.2) + 8 + (m.image ? 260 : 0);
+    if (cost > budget && hist.length) break;
+    budget -= cost;
+    const isLastUser = m.role === 'user' && !hist.some((h) => h.role === 'user');
+    if (m.role === 'user' && entry?.think === 'qwen3' && isLastUser && !S.settings.think) text = `${text} /no_think`;
+    const buf = m.role === 'user' ? S.images.get(m.id) : null;
+    if (buf && Engine.info?.image) {
+      hist.unshift({ role: 'user', content: [{ type: 'image', data: buf.slice(0) }, { type: 'text', text }] });
+    } else {
+      hist.unshift({ role: m.role, content: m.image && !buf ? `${text}\n(The photo from this message is no longer available.)` : text });
+    }
+  }
+  return [{ role: 'system', content: sys }, ...hist];
+}
+
+function friendlyError(e) {
+  const msg = String(e?.message || e || '');
+  if (/context|kv.?cache|exceed/i.test(msg)) return 'This chat is too long for the model’s memory. Start a new chat, or raise “Context memory” in You → Performance.';
+  if (/memory|OOM|allocation|out of bounds/i.test(msg)) return 'The device ran out of memory. Close other apps, or switch to a smaller model.';
+  if (/not.*loaded|loadModel/i.test(msg)) return 'The model isn’t loaded. Pick it again from the model button above.';
+  return `Something went wrong: ${msg.slice(0, 160) || 'unknown error'}`;
+}
+
+async function ensureReady() {
+  if (S.engine === 'ready' && Engine.w) return true;
+  if (!S.activeKey || !S.downloaded.has(S.activeKey)) {
+    const first = [...S.downloaded.keys()][0];
+    if (!first) return false;
+    S.activeKey = first;
+    store.set('activeKey', first);
+  }
+  await activateModel(S.activeKey, { quiet: true, keepGen: true });
+  return S.engine === 'ready';
+}
+
+async function sendPrompt(raw) {
+  const text = (raw ?? $('#prompt').value).trim();
+  if (!text && !S.pendingImage) return;
+  if (PREVIEW) { previewNotice('chat'); return; }
+  if (S.gen) return;
+  if (!S.downloaded.size) { go('models'); toast('Download a model first.'); return; }
+  if (S.pendingImage && !Engine.info?.image && S.engine === 'ready') { toast('This model can’t see photos. Pick LFM2.5 VL to ask about photos.'); return; }
+
+  let conv = currentConv();
+  if (!conv) {
+    conv = { id: uid(), title: '', createdAt: Date.now(), updatedAt: Date.now(), messages: [] };
+    S.convs.unshift(conv);
+    S.currentId = conv.id;
+  }
+  const user = { id: uid(), role: 'user', content: text || 'What’s in this photo?', at: Date.now() };
+  if (S.pendingImage) { user.image = S.pendingImage.thumb; S.images.set(user.id, S.pendingImage.buffer); }
+  conv.messages.push(user);
+  if (!conv.title) conv.title = user.content.replace(/\s+/g, ' ').slice(0, 60);
+  S.pendingImage = null;
+  $('#prompt').value = '';
+  autosize();
+  const ai = { id: uid(), role: 'assistant', content: '', reasoning: '', key: S.activeKey, at: Date.now(), pending: true };
+  conv.messages.push(ai);
+  conv.updatedAt = Date.now();
+  conv.model = keyLabel(S.activeKey).name;
+  saveConvs();
+  stickToBottom = true;
+  renderThread();
+  await runGeneration(conv, ai);
+}
+
+async function runGeneration(conv, ai) {
+  const ctrl = new AbortController();
+  S.gen = { convId: conv.id, msgId: ai.id, ctrl };
+  renderChrome();
+  paintStreaming(ai);
+  Wake.on();
+  try {
+    const ok = await ensureReady();
+    if (!ok) throw new Error(S.engineError || 'The model isn’t loaded');
+    if (ctrl.signal.aborted) throw Object.assign(new Error('aborted'), { name: 'AbortError' });
+    ai.key = S.activeKey;
+    const entry = activeEntry();
+    const messages = buildMessages(conv, ai, entry);
+    const params = samplingFor(entry);
+    const tStart = performance.now();
+    let thinkEnd = 0;
+    const res = await Engine.chat({
+      messages, params, signal: ctrl.signal,
+      onProgress: (p) => {
+        if (p.total > 0) { ai.progress = Math.min(1, (p.processed + (p.cache || 0)) / p.total); paintStreaming(ai); }
+      },
+      onDelta: (t, r) => {
+        ai.progress = null;
+        ai.content = t;
+        ai.reasoning = r;
+        if (!thinkEnd) {
+          const hadThought = !!r || /<think>|<\/think>/.test(t) || entry?.think === 'always';
+          const answer = r ? t : splitThink(t, entry?.think === 'always').answer;
+          if (hadThought && answer) thinkEnd = performance.now();
+        }
+        paintStreaming(ai);
+      },
+    });
+    ai.content = res.text;
+    ai.reasoning = res.reasoning;
+    if (thinkEnd) ai.thinkSecs = (thinkEnd - tStart) / 1000;
+    ai.stats = { tps: res.tps, tokens: res.tokens };
+    if (!res.text && !res.reasoning) ai.error = 'The model returned an empty answer. Try again or rephrase.';
+  } catch (e) {
+    if (ctrl.signal.aborted || e?.name === 'AbortError') ai.stopped = true;
+    else ai.error = friendlyError(e);
+  } finally {
+    ai.pending = false;
+    delete ai.progress;
+    S.gen = null;
+    conv.updatedAt = Date.now();
+    saveConvs();
+    Wake.off();
+    renderChrome();
+    renderThread();
+  }
+}
+
+function stopGeneration() {
+  if (S.gen) S.gen.ctrl.abort();
+}
+
+/* ------------------------------------------------------------------ */
+/* Model activation                                                    */
+/* ------------------------------------------------------------------ */
+let loadSeq = 0;
+async function activateModel(key, { quiet = false, keepGen = false } = {}) {
+  if (PREVIEW) { previewNotice(); return; }
+  if (!S.downloaded.has(key)) return;
+  if (S.gen && !keepGen) stopGeneration();
+  const seq = ++loadSeq;
+  S.activeKey = key;
+  store.set('activeKey', key);
+  S.engine = 'loading';
+  S.engineError = null;
+  renderChrome();
+  if (S.screen === 'chat') renderThread();
+  if (S.screen === 'models') renderModels();
+  try {
+    const gpu = S.settings.gpu && !store.get('gpuFallback', false);
+    const info = await Engine.load(key, { nCtx: ctxSize(), gpu });
+    if (seq !== loadSeq) return;
+    S.engineInfo = info;
+    S.engine = 'ready';
+    if (!quiet) toast(`${keyLabel(key).name} is ready${navigator.onLine ? '' : ' offline'}.`);
+  } catch (e) {
+    if (seq !== loadSeq) return;
+    S.engine = 'error';
+    S.engineError = e?.code === 'missing' || e?.code === 'engine' ? e.message : friendlyError(e);
+    if (!quiet) {
+      openSheet({
+        title: 'The model didn’t start',
+        body: `<p>${esc(S.engineError)}</p><p>If this keeps happening, try a smaller model or turn off GPU boost in You → Performance.</p>`,
+        actions: '<button type="button" class="btn primary block" data-action="retry-load">Try again</button><button type="button" class="btn ghost block" data-nav="models" data-action="close-sheet">See models</button>',
+      });
+    }
+  } finally {
+    if (seq === loadSeq) {
+      renderChrome();
+      if (S.screen === 'chat') renderThread();
+      if (S.screen === 'models') renderModels();
+      if (S.screen === 'you') renderYou();
+    }
+  }
+}
+
+async function refreshDownloaded() {
+  if (PREVIEW) return;
+  try {
+    const models = await Engine.listModels();
+    S.downloaded = new Map(models.map((m) => [m.url, { size: m.size }]));
+  } catch { /* engine unavailable */ }
+}
+
+/* ------------------------------------------------------------------ */
+/* Downloads                                                           */
+/* ------------------------------------------------------------------ */
+async function startDownload(entryId, { confirmed = false, heavyOk = false } = {}) {
+  if (PREVIEW) { previewNotice(); return; }
+  if (S.dl) { toast('Another download is still running.'); return; }
+  const entry = entryById(entryId);
+  if (!entry) return;
+  const qi = Math.min(S.quant[entryId] ?? 0, entry.files.length - 1);
+  const f = entry.files[qi];
+  const url = fileUrl(entry, f);
+  const mmprojUrl = mmprojUrlOf(entry);
+  const total = totalSize(entry, f);
+  if (!navigator.onLine) { toast('You’re offline. Connect to the internet to download.', 'risk'); return; }
+  S.device = await detectDevice();
+  const fit = total ? fitOf(total) : 'ok';
+  const flags = `data-entry="${esc(entryId)}" data-heavy-ok="1"`;
+  if (fit === 'blocked') {
+    openSheet({
+      title: 'Needs Chrome or Edge',
+      body: `<p>${esc(entry.name)} is <b>${fmtBytes(total)}</b>. This browser runs AI in a slower compatibility mode that can’t open files this big.</p><p>Open the app in Chrome or Edge to use it, or pick a model under ${fmtBytes(COMPAT_MAX, 1)}.</p>`,
+      actions: '<button type="button" class="btn primary block" data-action="close-sheet">OK</button>',
+    });
+    return;
+  }
+  if (fit === 'heavy' && !heavyOk) {
+    openSheet({
+      title: `${esc(entry.name)} is heavy for this device`,
+      body: `<p>It’s <b>${fmtBytes(total)}</b>, more than this device can comfortably run. It may answer very slowly, or the app may close while loading it.</p><p>Models up to about <b>${fmtBytes(memBudget(), 1)}</b> work best here. Big models run best in Chrome on a computer with 16 GB of memory.</p>`,
+      actions: `<button type="button" class="btn primary block" data-action="download" ${flags}>Download anyway</button><button type="button" class="btn ghost block" data-action="close-sheet">Pick a smaller model</button>`,
+    });
+    return;
+  }
+  if (S.device.free != null && total && total > S.device.free * 0.95) {
+    openSheet({
+      title: 'Not enough space',
+      body: `<p>${esc(entry.name)} needs about <b>${fmtBytes(total)}</b>, but only <b>${fmtBytes(S.device.free)}</b> is available to ${esc(APP.name)}.</p><p>Free up space on your device, or delete another model in Models → On this device.</p>`,
+      actions: '<button type="button" class="btn primary block" data-action="close-sheet">OK</button>',
+    });
+    return;
+  }
+  const conn = navigator.connection;
+  if (!confirmed && conn && (conn.type === 'cellular' || conn.saveData)) {
+    openSheet({
+      title: 'Download on mobile data?',
+      body: `<p>${esc(entry.name)} is <b>${fmtBytes(total)}</b>. Downloading on Wi-Fi is cheaper. You only need to do this once.</p>`,
+      actions: `<button type="button" class="btn primary block" data-action="download" ${flags} data-confirmed="1">Download anyway</button><button type="button" class="btn ghost block" data-action="close-sheet">Wait for Wi-Fi</button>`,
+    });
+    return;
+  }
+  closeSheet();
+  try { await Engine.ensureLib(); } catch {
+    S.engine = 'unavailable';
+    renderChrome();
+    openSheet({
+      title: 'Can’t reach the engine',
+      body: `<p>${esc(APP.name)} needs internet the first time to fetch its AI engine. Check your connection and try again.</p>`,
+      actions: '<button type="button" class="btn primary block" data-action="close-sheet">OK</button>',
+    });
+    return;
+  }
+  const ctrl = new AbortController();
+  const now = performance.now();
+  S.dl = { entryId, key: url, loaded: 0, total, speed: 0, lastT: now, lastLoaded: 0, ctrl };
+  Wake.on();
+  try { navigator.storage?.persist?.().then((p) => { if (S.device) S.device.persisted = p; }); } catch { /* ignore */ }
+  renderModels();
+  Engine.warm().catch(() => {});
+  try {
+    await Engine.download({ url, mmprojUrl }, {
+      signal: ctrl.signal,
+      progressCallback: ({ loaded, total }) => onDownloadProgress(loaded, total),
+    });
+    S.dl = null;
+    await refreshDownloaded();
+    if (!S.downloaded.has(url)) throw new Error('The download finished but the file looks incomplete.');
+    if (S.engine !== 'ready' || !S.activeKey || S.activeKey === url || !S.downloaded.has(S.activeKey)) {
+      activateModel(url);
+    } else {
+      toast(`${entry.name} is on this device. Tap “Use this model” to switch.`);
+    }
+  } catch (e) {
+    const aborted = ctrl.signal.aborted || e?.name === 'AbortError';
+    S.dl = null;
+    await Engine.cleanup([url, mmprojUrl].filter(Boolean)).catch(() => {});
+    if (aborted) toast('Download cancelled.');
+    else {
+      openSheet({
+        title: 'Download stopped',
+        body: `<p>${esc(entry.name)} didn’t finish downloading.</p><p class="mono" style="font-size:.75rem">${esc(String(e?.message || e).slice(0, 180))}</p><p>Check your connection and try again. Keep the app open while it downloads.</p>`,
+        actions: `<button type="button" class="btn primary block" data-action="download" ${flags} data-confirmed="1">Try again</button><button type="button" class="btn ghost block" data-action="close-sheet">Close</button>`,
+      });
+    }
+  } finally {
+    Wake.off();
+    S.device = await detectDevice();
+    renderModels();
+    renderChrome();
+    if (S.screen === 'chat') renderThread();
+  }
+}
+
+function onDownloadProgress(loaded, total) {
+  const d = S.dl;
+  if (!d) return;
+  const now = performance.now();
+  const dt = (now - d.lastT) / 1000;
+  if (dt >= 0.4) {
+    const inst = (loaded - d.lastLoaded) / dt;
+    d.speed = d.speed ? d.speed * 0.75 + inst * 0.25 : inst;
+    d.lastT = now;
+    d.lastLoaded = loaded;
+  }
+  d.loaded = loaded;
+  if (total > 0) d.total = total;
+  paintDownload();
+}
+
+function dlStatsText(d) {
+  const eta = d.speed > 0 ? fmtDuration((d.total - d.loaded) / d.speed) : '';
+  return `${fmtBytes(d.loaded)} of ${fmtBytes(d.total)}${d.speed > 0 ? ` · ${(d.speed / 1e6).toFixed(1)} MB/s` : ''}${eta ? ` · ${eta}` : ''}`;
+}
+function paintDownload() {
+  const d = S.dl;
+  if (!d) return;
+  const card = document.querySelector(`.mcard[data-entry="${CSS.escape(d.entryId)}"]`);
+  if (!card) return;
+  const p = d.total ? d.loaded / d.total : 0;
+  const bar = card.querySelector('.bar i');
+  if (bar) bar.style.width = `${(p * 100).toFixed(1)}%`;
+  const pct = card.querySelector('.dl .pct');
+  if (pct) pct.textContent = `${Math.floor(p * 100)}%`;
+  const stats = card.querySelector('.dl-stats');
+  if (stats) stats.textContent = dlStatsText(d);
+  const rect = card.querySelector('.fill-rect');
+  if (rect) {
+    const h = Math.max(0, Math.min(1, p)) * 34;
+    rect.setAttribute('y', (36.6 - h).toFixed(2));
+    rect.setAttribute('height', (h + 0.5).toFixed(2));
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Models screen                                                       */
+/* ------------------------------------------------------------------ */
+function deviceCardHtml() {
+  const d = S.device;
+  if (!d) return '<section class="device"><p class="device-note">Checking your device…</p></section>';
+  const budget = memBudget();
+  const speed = Engine.info
+    ? `${Engine.info.gpu ? 'GPU' : 'CPU'} · ${Engine.info.threads} thr`
+    : d.gpu ? 'GPU ready' : `CPU${d.isolated ? ' · multi-core' : ''}`;
+  return `<section class="device" aria-label="Your device">
+    <div class="device-top"><div class="device-ico">${icon('phone', 'lg')}</div>
+      <div><p class="device-name">${esc(d.name)}</p><p class="device-note">Suggestions below are based on this device.</p></div></div>
+    <dl class="stat-grid">
+      <div class="stat"><dt>Memory</dt><dd>${d.ram ? `${d.ram >= 8 ? '8+' : d.ram} GB` : 'Unknown'}</dd></div>
+      <div class="stat"><dt>Cores</dt><dd>${d.cores || '—'}</dd></div>
+      <div class="stat"><dt>Free space</dt><dd>${d.free != null ? fmtBytes(d.free, 1) : '—'}</dd></div>
+      <div class="stat"><dt>Speed</dt><dd>${esc(speed)}</dd></div>
+    </dl>
+    <p class="device-advice">Models up to about <b>${fmtBytes(budget, 1)}</b> should run well here. Bigger ones may be slow or close the app.${!d.jspi || !d.mem64 ? ' This browser uses compatibility mode, which is slower. Chrome works best.' : ''}</p>
+  </section>`;
+}
+
+function modelCardHtml(entry, { compact = false } = {}) {
+  const qi = Math.min(S.quant[entry.id] ?? 0, entry.files.length - 1);
+  const f = entry.files[qi];
+  const key = fileUrl(entry, f);
+  const downloadedQi = entry.files.findIndex((x) => S.downloaded.has(fileUrl(entry, x)));
+  const isDown = S.downloaded.has(key);
+  const isActive = S.activeKey === key;
+  const isDl = S.dl && S.dl.entryId === entry.id;
+  const size = totalSize(entry, f) || S.downloaded.get(key)?.size || 0;
+  const fit = size ? fitOf(size) : null;
+  const pick = !entry.custom && entry.id === pickId();
+  const specs = [
+    entry.params && `<li>${esc(entry.params)} params</li>`,
+    size ? `<li>${sizeClass(size)}</li>` : '',
+    `<li class="mono">${esc(f.quant)}</li>`,
+    size ? `<li class="mono">${fmtBytes(size)}</li>` : '',
+    entry.tags.includes('code') ? '<li>Code</li>' : '',
+    entry.think === 'qwen3' || entry.think === 'smollm3' ? '<li>Think mode</li>' : entry.think === 'always' ? '<li>Always thinks</li>' : '',
+    entry.tags.includes('vision') ? '<li>Sees photos</li>' : '',
+    entry.tags.includes('multilingual') ? '<li class="lang">Multilingual</li>' : '',
+  ].filter(Boolean).join('');
+
+  let action;
+  if (isDl) {
+    const d = S.dl;
+    const p = d.total ? d.loaded / d.total : 0;
+    action = `<div class="dl" role="status">${torchFill(entry.id.replace(/[^\w-]/g, ''), p)}
+      <div class="dl-main"><div class="dl-top"><span>${d.importing ? 'Copying into the app' : 'Downloading'}</span><span class="pct">${Math.floor(p * 100)}%</span></div>
+      <div class="bar"><i style="width:${(p * 100).toFixed(1)}%"></i></div><p class="dl-stats mono">${dlStatsText(d)}</p></div>
+      ${d.importing ? '' : '<button type="button" class="btn sm" data-action="cancel-download">Cancel</button>'}</div>`;
+  } else if (isDown) {
+    const loading = isActive && S.engine === 'loading';
+    action = `<div class="mcard-actions"><span class="status-line">${icon('check', 'sm')} ${isActive && S.engine === 'ready' ? 'In use · works offline' : 'On this device'}</span>
+      ${isActive && (S.engine === 'ready' || loading) ? `<button type="button" class="btn sm" data-action="go-chat">${loading ? 'Waking up…' : 'Chat'}</button>` : `<button type="button" class="btn primary sm" data-action="use-model" data-key="${esc(key)}">Use this model</button>`}
+      <button type="button" class="btn sm danger" data-action="delete-model" data-key="${esc(key)}" aria-label="Delete ${esc(entry.name)}">${icon('trash', 'sm')}</button></div>`;
+  } else {
+    const off = !!S.dl || fit === 'blocked';
+    action = `<div class="mcard-actions"><button type="button" class="btn primary" data-action="download" data-entry="${esc(entry.id)}"${off ? ' disabled' : ''}>${icon('download', 'sm')} Download · ${size ? fmtBytes(size) : 'size unknown'}</button>
+      ${downloadedQi !== -1 && downloadedQi !== qi ? `<span class="chip ok">${esc(entry.files[downloadedQi].quant)} on this device</span>` : ''}
+      ${entry.custom && !entry.imported && !entry.id.startsWith('unknown-') ? `<button type="button" class="btn sm ghost" data-action="remove-custom" data-entry="${esc(entry.id)}">Remove</button>` : ''}</div>`;
+  }
+
+  const quantHtml = entry.files.length > 1 && !isDl ? `<div class="quant" role="group" aria-label="Quality">${entry.files.map((x, i) => `<button type="button" data-action="quant" data-entry="${esc(entry.id)}" data-qi="${i}" aria-pressed="${i === qi}"><b>${esc(x.label)}</b><span>${esc(x.quant)} · ${fmtBytes(totalSize(entry, x))}</span></button>`).join('')}</div>` : '';
+
+  const repoOf = f.repo || entry.repo;
+  const source = repoOf ? `https://huggingface.co/${repoOf}` : (f.url && !f.url.startsWith(LOCAL_HOST) ? f.url : '');
+  return `<article class="mcard${pick ? ' is-pick' : ''}" data-entry="${esc(entry.id)}">
+    ${pick ? `<span class="pick-tag">${torch('', false)} Best pick for this device</span>` : ''}
+    <div class="mcard-head"><div class="mcard-title"><h3 class="mcard-name">${esc(entry.name)}</h3><p class="mcard-maker">${esc(entry.maker)}${entry.via ? ` · file by ${esc(entry.via)}` : ''}</p></div>
+      ${fit ? `<span class="fit" data-fit="${fit}">${FIT_LABEL[fit]}</span>` : ''}</div>
+    ${compact ? '' : `<p class="mcard-blurb">${esc(entry.blurb)}</p>`}
+    <ul class="specs">${specs}</ul>
+    ${compact ? '' : quantHtml}
+    ${action}
+    ${compact ? '' : `<details class="details"><summary>Specs & source ${icon('chevron', 'sm chev')}</summary><dl>
+      <dt>File</dt><dd>${esc(f.file || keyLabel(key).name)}</dd>
+      <dt>Quality</dt><dd>${esc(f.quant)}${f.label ? ` (${esc(f.label)})` : ''}</dd>
+      <dt>Download</dt><dd>${size ? fmtBytes(size) : '—'}${entry.mmproj ? ' in total' : ''}</dd>
+      ${entry.mmproj ? `<dt>Photo encoder</dt><dd>${esc(entry.mmproj.file)}${entry.mmproj.size ? ` · ${fmtBytes(entry.mmproj.size)}` : ''}</dd>` : ''}
+      <dt>Context</dt><dd>${esc(entry.ctx)} tokens max</dd>
+      <dt>Languages</dt><dd>${esc(entry.langs)}</dd>
+      <dt>License</dt><dd>${esc(entry.license)}</dd>
+      ${source ? `<dt>Source</dt><dd><a href="${esc(source)}" target="_blank" rel="noopener noreferrer">${esc(source.replace('https://', ''))}</a></dd>` : ''}
+    </dl></details>`}
+  </article>`;
+}
+
+const baseSize = (e) => totalSize(e, e.files[0]);
+/** Group used for the "Best for this device" order: your models, the pick, then by fit. */
+function groupOf(e, pid) {
+  if (e.custom) return 'custom';
+  if (e.id === pid) return 'pick';
+  return baseSize(e) ? fitOf(baseSize(e)) : 'ok';
+}
+function filteredCatalog() {
+  const q = S.query.trim().toLowerCase();
+  let list = allEntries().filter((e) => {
+    if (S.filter === 'all') return true;
+    if (S.filter === 'under1gb') return baseSize(e) > 0 && baseSize(e) < 1e9;
+    return e.tags.includes(S.filter);
+  });
+  if (q) list = list.filter((e) => [e.name, e.maker, e.blurb, e.langs, e.params, ...(e.tags || [])].join(' ').toLowerCase().includes(q));
+  const pid = pickId();
+  if (S.sort === 'small') list.sort((a, b) => baseSize(a) - baseSize(b));
+  else if (S.sort === 'large') list.sort((a, b) => baseSize(b) - baseSize(a));
+  else {
+    const rank = (e) => {
+      const g = groupOf(e, pid);
+      return g === 'custom' ? -2 : g === 'pick' ? -1 : FIT_RANK[g] ?? 4;
+    };
+    list.sort((a, b) => rank(a) - rank(b) || baseSize(a) - baseSize(b));
+  }
+  return list;
+}
+function catalogListHtml(list) {
+  if (S.sort !== 'recommended') return list.map((e) => modelCardHtml(e)).join('');
+  const pid = pickId();
+  let html = '';
+  let last = null;
+  for (const e of list) {
+    const g = groupOf(e, pid);
+    if (g !== last && g !== 'pick') html += `<p class="group-label">${FIT_GROUP[g]}</p>`;
+    last = g;
+    html += modelCardHtml(e);
+  }
+  return html;
+}
+
+function onDeviceEntries() {
+  const out = [];
+  const seen = new Set();
+  for (const [key, info] of S.downloaded) {
+    const hit = findByKey(key);
+    if (hit) {
+      if (seen.has(hit.entry.id + hit.qi)) continue;
+      seen.add(hit.entry.id + hit.qi);
+      S.quant[hit.entry.id] = hit.qi;
+      out.push(hit.entry);
+    } else {
+      out.push({
+        id: `unknown-${key}`, name: keyLabel(key).name, maker: 'Found on this device', params: '', tags: ['chat'], custom: true,
+        blurb: '', files: [{ quant: 'GGUF', file: keyLabel(key).name, size: info.size, url: key }], langs: '—', license: '—', ctx: '—',
+      });
+    }
+  }
+  return out;
+}
+
+function renderModels() {
+  const root = $('#models-root');
+  if (!root) return;
+  const onDevice = PREVIEW ? [] : onDeviceEntries();
+  const usedBytes = [...S.downloaded.values()].reduce((a, b) => a + (b.size || 0), 0);
+  const focusId = document.activeElement?.id;
+  let body = '';
+  if (S.modelsTab === 'catalog') {
+    const list = filteredCatalog();
+    body = `<div class="toolbar">
+        <label class="search">${icon('search', 'sm')}<span class="sr-only">Search models</span><input id="model-search" type="search" placeholder="Search models, makers or uses" value="${esc(S.query)}"></label>
+        <div class="filters" role="group" aria-label="Filter">${FILTERS.map((f) => `<button type="button" class="filter" data-action="filter" data-filter="${f.id}" aria-pressed="${S.filter === f.id}">${esc(f.label)}</button>`).join('')}</div>
+        <div class="sort-row"><span class="mono">${list.length} model${list.length === 1 ? '' : 's'}</span>
+          <label><span class="sr-only">Sort</span><select class="select" id="model-sort">
+            <option value="recommended"${S.sort === 'recommended' ? ' selected' : ''}>Best for this device</option>
+            <option value="small"${S.sort === 'small' ? ' selected' : ''}>Smallest first</option>
+            <option value="large"${S.sort === 'large' ? ' selected' : ''}>Largest first</option>
+          </select></label></div>
+      </div>
+      <div class="model-list">${list.length ? catalogListHtml(list) : `<div class="empty"><div class="empty-ico">${icon('search', 'lg')}</div><h3>No models match</h3><p>Try another word or clear the filter.</p></div>`}</div>
+      ${addOwnHtml()}`;
+  } else {
+    body = onDevice.length
+      ? `<div class="storage-line"><span>${onDevice.length} model${onDevice.length === 1 ? '' : 's'} · <span class="mono">${fmtBytes(usedBytes)}</span> used</span>${S.device?.free != null ? `<span class="mono">${fmtBytes(S.device.free, 1)} free</span>` : ''}</div>
+         <div class="model-list">${onDevice.map((e) => modelCardHtml(e, { compact: true })).join('')}</div>${addOwnHtml()}`
+      : `<div class="empty"><div class="empty-ico">${icon('download', 'lg')}</div><h3>No models on this device yet</h3><p>Download one from the catalog. It stays on this device and works offline.</p><button type="button" class="btn primary" data-action="models-tab" data-tab="catalog">Browse the catalog</button></div>${addOwnHtml()}`;
+  }
+  root.innerHTML = `
+    <header class="screen-head"><p class="eyebrow">Model library</p><h1 class="screen-title">Models</h1>
+      <p class="screen-sub">Pick the AI model ${esc(APP.name)} uses. Download it once, on Wi-Fi if you can, and it keeps working with no signal.</p></header>
+    ${deviceCardHtml()}
+    <div class="seg" role="tablist" aria-label="Model lists">
+      <button type="button" role="tab" data-action="models-tab" data-tab="catalog" aria-selected="${S.modelsTab === 'catalog'}">Catalog</button>
+      <button type="button" role="tab" data-action="models-tab" data-tab="device" aria-selected="${S.modelsTab === 'device'}">On this device<span class="count">${onDevice.length}</span></button>
+    </div>
+    ${body}`;
+  if (focusId === 'model-search') {
+    const inp = $('#model-search');
+    inp.focus();
+    inp.setSelectionRange(inp.value.length, inp.value.length);
+  }
+}
+
+function addOwnHtml() {
+  return `<section class="add-own" aria-label="Add your own model">
+    <h2 class="section-title">Have your own model?</h2>
+    <p>Use any GGUF chat model: paste a Hugging Face link, or import a file you already have on this device.</p>
+    <div class="row"><button type="button" class="btn sm" data-action="add-link">${icon('link', 'sm')} Paste a link</button><button type="button" class="btn sm" data-action="import-file">${icon('folder', 'sm')} Import a .gguf file</button></div>
+  </section>`;
+}
+
+/* ------------------------------------------------------------------ */
+/* Custom models                                                       */
+/* ------------------------------------------------------------------ */
+function openAddLink() {
+  if (PREVIEW) { previewNotice(); return; }
+  openSheet({
+    title: 'Add a model from a link',
+    body: `<p>Paste the link to a <span class="mono">.gguf</span> file on Hugging Face. Pick a Q4 or Q5 file under 2 GB for phones.</p>
+      <div class="field"><label for="link-input">Model file link</label><input class="input mono" id="link-input" type="url" inputmode="url" placeholder="https://huggingface.co/…/resolve/main/model-Q4_K_M.gguf" data-autofocus>
+      <span class="hint" id="link-hint">Links that contain /blob/ are fixed automatically.</span></div>`,
+    actions: '<button type="button" class="btn primary block" data-action="save-link">Add model</button><button type="button" class="btn ghost block" data-action="close-sheet">Cancel</button>',
+  });
+}
+async function saveLink() {
+  const inp = $('#link-input');
+  const hint = $('#link-hint');
+  let url = (inp?.value || '').trim().replace('/blob/', '/resolve/');
+  if (url && !/^https?:\/\//.test(url)) url = 'https://' + url;
+  let ok = false;
+  try { const u = new URL(url); ok = /\.gguf$/i.test(u.pathname) && /(^|\.)huggingface\.co$|(^|\.)hf\.co$/i.test(u.hostname); } catch { ok = false; }
+  if (!ok) { hint.textContent = 'That doesn’t look like a Hugging Face .gguf file link.'; hint.style.color = 'var(--risk)'; return; }
+  if (allEntries().some((e) => e.files.some((f) => fileUrl(e, f) === url))) { hint.textContent = 'That model is already in your list.'; hint.style.color = 'var(--risk)'; return; }
+  let size = 0;
+  hint.textContent = 'Checking the file…';
+  hint.style.color = '';
+  try { const r = await fetch(url, { method: 'HEAD' }); if (r.ok) size = Number(r.headers.get('content-length') || 0); } catch { /* offline or blocked */ }
+  if (needsCompat() && size > COMPAT_MAX) { hint.textContent = 'This file is too big for this browser. Open the app in Chrome or Edge, or pick a smaller file.'; hint.style.color = 'var(--risk)'; return; }
+  const file = decodeURIComponent(url.split('/').pop());
+  const repo = (url.match(/huggingface\.co\/([^/]+\/[^/]+)\//) || [])[1] || null;
+  const c = { id: 'c-' + uid(), name: file.replace(/\.gguf$/i, '').replace(/[-_]/g, ' '), file, url, size, repo, quant: (file.match(/(I?Q\d[\w]*|F16|BF16)/i) || [])[1]?.toUpperCase() || 'GGUF' };
+  S.customModels.unshift(c);
+  store.set('custom', S.customModels);
+  closeSheet();
+  S.modelsTab = 'catalog';
+  S.filter = 'all';
+  renderModels();
+  toast('Model added. Tap Download to get it.');
+}
+
+function importFile() {
+  if (PREVIEW) { previewNotice(); return; }
+  if (S.dl) { toast('Wait for the current download to finish.'); return; }
+  $('#gguf-input').click();
+}
+async function onGgufPicked(files) {
+  const list = [...(files || [])];
+  if (!list.length) return;
+  const main = list.find((f) => /\.gguf$/i.test(f.name) && !/mmproj/i.test(f.name));
+  const mmproj = list.find((f) => /mmproj/i.test(f.name) && /\.gguf$/i.test(f.name));
+  if (!main) { toast('Pick a .gguf model file.', 'risk'); return; }
+  if (needsCompat() && main.size > COMPAT_MAX) { toast('This file is too big for this browser. Use Chrome or Edge.', 'risk'); return; }
+  S.device = await detectDevice();
+  if (S.device.free != null && main.size > S.device.free * 0.95) { toast('Not enough free space to import this file.', 'risk'); return; }
+  const id = 'i-' + uid();
+  const safe = encodeURIComponent(main.name);
+  const url = `${LOCAL_HOST}${id}/${safe}`;
+  const mmUrl = mmproj ? `${LOCAL_HOST}${id}/${encodeURIComponent(mmproj.name)}` : undefined;
+  const c = { id, name: main.name.replace(/\.gguf$/i, '').replace(/[-_]/g, ' '), file: main.name, url, mmprojUrl: mmUrl, size: main.size + (mmproj?.size || 0), imported: true, quant: (main.name.match(/(I?Q\d[\w]*|F16|BF16)/i) || [])[1]?.toUpperCase() || 'GGUF' };
+  S.customModels.unshift(c);
+  store.set('custom', S.customModels);
+  const ctrl = new AbortController();
+  S.dl = { entryId: id, key: url, loaded: 0, total: c.size, speed: 0, lastT: performance.now(), lastLoaded: 0, ctrl, importing: true };
+  S.modelsTab = 'catalog';
+  go('models');
+  Wake.on();
+  try {
+    let base = 0;
+    if (mmUrl) {
+      await Engine.importFile(mmUrl, mmproj, { mmprojURL: mmUrl }, (l) => onDownloadProgress(l, c.size));
+      base = mmproj.size;
+    }
+    await Engine.importFile(url, main, mmUrl ? { mmprojURL: mmUrl } : {}, (l) => onDownloadProgress(base + l, c.size));
+    S.dl = null;
+    await refreshDownloaded();
+    toast(`${c.name} imported.`);
+    activateModel(url);
+  } catch (e) {
+    S.dl = null;
+    S.customModels = S.customModels.filter((x) => x.id !== id);
+    store.set('custom', S.customModels);
+    await Engine.cleanup([url, mmUrl].filter(Boolean)).catch(() => {});
+    toast(`Import failed: ${String(e?.message || e).slice(0, 80)}`, 'risk');
+  } finally {
+    Wake.off();
+    $('#gguf-input').value = '';
+    renderModels();
+    renderChrome();
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* History screen                                                      */
+/* ------------------------------------------------------------------ */
+function dayGroup(ts) {
+  const d = new Date(ts);
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  const diff = (start - new Date(d.getFullYear(), d.getMonth(), d.getDate())) / 864e5;
+  if (diff <= 0) return 'Today';
+  if (diff === 1) return 'Yesterday';
+  if (diff < 7) return 'This week';
+  return 'Earlier';
+}
+function renderHistory() {
+  const root = $('#history-root');
+  if (!root) return;
+  const focusId = document.activeElement?.id;
+  const q = S.historyQuery.trim().toLowerCase();
+  let inner = '';
+  if (S.historyTab === 'chats') {
+    const list = S.convs.filter((c) => c.messages?.length && (!q || (c.title + ' ' + c.messages.map((m) => m.content).join(' ')).toLowerCase().includes(q)));
+    if (!S.convs.length) {
+      inner = `<div class="empty"><div class="empty-ico">${icon('chat', 'lg')}</div><h3>No chats yet</h3><p>Your conversations are saved on this device so you can pick them up later.</p><button type="button" class="btn primary" data-nav="chat">Start a chat</button></div>`;
+    } else if (!list.length) {
+      inner = `<div class="empty"><div class="empty-ico">${icon('search', 'lg')}</div><h3>Nothing found</h3><p>No chat contains “${esc(S.historyQuery)}”.</p></div>`;
+    } else {
+      let last = '';
+      inner = '<div class="conv-list">';
+      for (const c of list) {
+        const g = dayGroup(c.updatedAt);
+        if (g !== last) { inner += `<p class="group-label">${g}</p>`; last = g; }
+        const lastAi = [...c.messages].reverse().find((m) => m.role === 'assistant' && m.content);
+        const snip = lastAi ? splitThink(lastAi.content).answer.replace(/[#*_`>|]/g, '').slice(0, 120) : '';
+        inner += `<div class="conv"><button type="button" class="conv-open" data-action="open-conv" data-id="${c.id}">
+          <span class="conv-title">${esc(c.title || 'Untitled chat')}</span>
+          ${snip ? `<span class="conv-snippet">${esc(snip)}</span>` : ''}
+          <span class="conv-meta">${esc(timeAgo(c.updatedAt))}${c.model ? ` · ${esc(c.model)}` : ''} · ${c.messages.length} msgs</span></button>
+          <button type="button" class="icon-btn ghost" data-action="delete-conv" data-id="${c.id}" aria-label="Delete chat">${icon('trash', 'sm')}</button></div>`;
+      }
+      inner += '</div>';
+    }
+  } else {
+    const list = S.saved.filter((s) => !q || s.content.toLowerCase().includes(q));
+    if (!S.saved.length) {
+      inner = `<div class="empty"><div class="empty-ico">${icon('bookmark', 'lg')}</div><h3>No saved answers</h3><p>Tap the bookmark under any answer to keep it here, even if you delete the chat.</p></div>`;
+    } else if (!list.length) {
+      inner = `<div class="empty"><div class="empty-ico">${icon('search', 'lg')}</div><h3>Nothing found</h3><p>No saved answer contains “${esc(S.historyQuery)}”.</p></div>`;
+    } else {
+      inner = `<div class="conv-list">${list.map((s) => `<article class="saved-card" data-sid="${s.id}">
+        <div class="saved-meta">${icon('bookmark-fill', 'sm')}<span>${esc(s.question ? s.question.slice(0, 70) : 'Saved answer')}</span><span class="spacer"></span><span class="mono">${esc(timeAgo(s.savedAt))}</span></div>
+        <div class="md">${md(splitThink(s.content).answer)}</div>
+        <div class="msg-foot"><button type="button" class="btn sm" data-action="expand-saved" data-id="${s.id}">Show all</button>
+          <button type="button" class="icon-btn ghost" data-action="copy-saved" data-id="${s.id}" aria-label="Copy">${icon('copy', 'sm')}</button>
+          <button type="button" class="icon-btn ghost" data-action="unsave" data-id="${s.id}" aria-label="Remove from saved">${icon('trash', 'sm')}</button>
+          <span class="stats mono">${esc(s.model || '')}</span></div></article>`).join('')}</div>`;
+    }
+  }
+  root.innerHTML = `
+    <header class="screen-head"><p class="eyebrow">Saved on this device</p><h1 class="screen-title">History</h1>
+      <p class="screen-sub">Chats never leave this device. Pick up where you left off.</p></header>
+    <div class="seg" role="tablist" aria-label="History lists">
+      <button type="button" role="tab" data-action="history-tab" data-tab="chats" aria-selected="${S.historyTab === 'chats'}">Chats<span class="count">${S.convs.filter((c) => c.messages?.length).length}</span></button>
+      <button type="button" role="tab" data-action="history-tab" data-tab="saved" aria-selected="${S.historyTab === 'saved'}">Saved answers<span class="count">${S.saved.length}</span></button>
+    </div>
+    ${(S.historyTab === 'chats' ? S.convs.length : S.saved.length) ? `<label class="search">${icon('search', 'sm')}<span class="sr-only">Search history</span><input id="history-search" type="search" placeholder="${S.historyTab === 'chats' ? 'Search your chats' : 'Search saved answers'}" value="${esc(S.historyQuery)}"></label>` : ''}
+    ${inner}`;
+  if (focusId === 'history-search') {
+    const inp = $('#history-search');
+    inp?.focus();
+    inp?.setSelectionRange(inp.value.length, inp.value.length);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* You screen                                                          */
+/* ------------------------------------------------------------------ */
+function segHtml(pref, options, value) {
+  return `<div class="seg" role="group">${options.map(([v, l]) => `<button type="button" data-action="set-pref" data-pref="${pref}" data-value="${v}" aria-pressed="${String(value) === String(v)}">${esc(l)}</button>`).join('')}</div>`;
+}
+const LANG_OPTS = [['auto', 'Auto'], ['en', 'English'], ['fil', 'Filipino'], ['taglish', 'Taglish']];
+const LEN_OPTS = [['short', 'Short'], ['balanced', 'Balanced'], ['detailed', 'Detailed']];
+const CRE_OPTS = [['precise', 'Precise'], ['balanced', 'Balanced'], ['creative', 'Creative']];
+
+function renderYou() {
+  const root = $('#you-root');
+  if (!root) return;
+  const s = S.settings;
+  const initials = (S.profile.name || 'You').trim().split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+  const usedBytes = [...S.downloaded.values()].reduce((a, b) => a + (b.size || 0), 0);
+  const d = S.device || {};
+  const info = Engine.info;
+  root.innerHTML = `
+    <header class="screen-head"><p class="eyebrow">Personal &amp; settings</p><h1 class="screen-title">You</h1>
+      <p class="screen-sub">Details and preferences that shape ${esc(APP.name)}’s answers. Everything here stays on this device.</p></header>
+
+    <section class="card" aria-label="Profile">
+      <div class="card-head"><div class="avatar" aria-hidden="true">${esc(initials)}</div><div><h2 class="section-title">Your profile</h2><p class="device-note">${esc(APP.name)} uses this only when it helps an answer.</p></div></div>
+      <div class="field"><label for="pf-name">Name</label><input class="input" id="pf-name" maxlength="60" placeholder="What should ${esc(APP.name)} call you?" value="${esc(S.profile.name)}"></div>
+      <div class="field"><label for="pf-about">About you</label><textarea class="textarea" id="pf-about" maxlength="600" placeholder="e.g. Grade 11 STEM student in Cebu, reviewing for the UPCAT. I like short answers.">${esc(S.profile.about)}</textarea><span class="hint">Up to 600 characters.</span></div>
+      <div class="row-setting"><div class="txt"><b>Use my profile in chats</b><span>Turn off to keep every chat anonymous.</span></div><label class="switch"><input type="checkbox" id="pf-use" ${s.useProfile ? 'checked' : ''}><span></span><b class="sr-only">Use my profile in chats</b></label></div>
+    </section>
+
+    <section class="card" aria-label="Replies">
+      <h2 class="section-title">Replies</h2>
+      <div class="field"><span class="label">Language</span>${segHtml('language', LANG_OPTS, s.language)}</div>
+      <div class="field"><span class="label">Length</span>${segHtml('length', LEN_OPTS, s.length)}</div>
+      <div class="field"><span class="label">Creativity</span>${segHtml('creativity', CRE_OPTS, s.creativity)}</div>
+    </section>
+
+    <section class="card" aria-label="Performance">
+      <h2 class="section-title">Performance</h2>
+      <div class="field"><span class="label">Context memory</span>${segHtml('ctx', [['auto', 'Auto'], ['2048', '2K'], ['4096', '4K'], ['8192', '8K']], s.ctx)}
+        <span class="hint">How much of the chat the model remembers. More uses more memory. Now: <span class="mono">${ctxSize().toLocaleString()} tokens</span>.</span></div>
+      <div class="row-setting"><div class="txt"><b>GPU boost</b><span>${d.gpu ? 'Uses WebGPU for faster replies when it works on this device.' : 'This browser has no WebGPU, so the app uses the processor.'}</span></div><label class="switch"><input type="checkbox" id="set-gpu" ${s.gpu ? 'checked' : ''} ${d.gpu ? '' : 'disabled'}><span></span><b class="sr-only">GPU boost</b></label></div>
+      <div class="divider"></div>
+      <div class="kv"><span>Engine</span><span class="mono">${info ? `${info.gpu ? 'GPU' : 'CPU'} · ${info.threads} thread${info.threads === 1 ? '' : 's'}` : S.engine === 'loading' ? 'Starting…' : 'Idle'}</span></div>
+      <div class="kv"><span>Multi-core</span><span class="mono">${d.isolated ? 'On' : 'Off'}</span></div>
+      ${store.get('gpuFallback', false) ? '<div class="kv"><span>GPU</span><span class="mono">Fell back to CPU once</span></div><button type="button" class="btn sm" data-action="reset-gpu">Try GPU again</button>' : ''}
+    </section>
+
+    ${PREVIEW ? '' : `<section class="card" aria-label="Appearance"><h2 class="section-title">Appearance</h2>${segHtml('theme', [['system', 'System'], ['dark', 'Night'], ['light', 'Day']], s.theme)}</section>`}
+
+    <section class="card" aria-label="Storage and privacy">
+      <h2 class="section-title">Storage &amp; privacy</h2>
+      <div class="kv"><span>Models on this device</span><span class="mono">${S.downloaded.size} · ${fmtBytes(usedBytes)}</span></div>
+      <div class="kv"><span>Chats saved</span><span class="mono">${S.convs.filter((c) => c.messages?.length).length}</span></div>
+      <div class="row-setting"><div class="txt"><b>Keep models safe</b><span>${d.persisted ? 'Protected. The browser won’t clear your models to free space.' : 'Ask the browser not to clear your models when space runs low.'}</span></div>
+        ${d.persisted ? `<span class="chip ok">${icon('check', 'sm')} On</span>` : '<button type="button" class="btn sm" data-action="persist">Protect</button>'}</div>
+      <p class="device-note">${icon('shield', 'sm')} ${esc(APP.name)} goes online only to download models and its engine. Your chats, profile and photos never leave this device.</p>
+      <div class="row" style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn sm danger" data-action="clear-chats">Delete all chats</button><button type="button" class="btn sm danger" data-action="clear-models">Delete all models</button></div>
+    </section>
+
+    ${S.installPrompt ? `<section class="card" aria-label="Install"><div class="row-setting"><div class="txt"><b>Install ${esc(APP.name)}</b><span>Add it to your home screen so it opens like an app, even offline.</span></div><button type="button" class="btn primary sm" data-action="install">Install</button></div></section>` : ''}
+
+    <section class="about" aria-label="About ${esc(APP.name)}">
+      <div class="about-top">${torch('is-idle')}<div><p class="about-name">${esc(APP.name)}</p>
+        <p class="about-tag">Your offline AI. Download a model once, then use it anywhere, even when the signal is gone.</p></div></div>
+      <div class="dev"><div class="dev-ico">${icon('code')}</div><div><small>Developed by</small><b>${esc(APP.developer)}</b></div></div>
+      <div class="about-rows">
+        <div class="kv"><span>Version</span><span class="mono">${APP.version}</span></div>
+        <div class="kv"><span>AI engine</span><span class="mono">wllama ${esc(Engine.urls?.version && Engine.urls.version !== 'test' ? Engine.urls.version : ENGINE_VERSIONS[0])} · llama.cpp</span></div>
+        <div class="kv"><span>Models</span><span>Each keeps its maker’s license</span></div>
+      </div>
+    </section>`;
+}
+
+/* ------------------------------------------------------------------ */
+/* Sheets: model picker & reply settings                               */
+/* ------------------------------------------------------------------ */
+function openModelPicker() {
+  if (PREVIEW) {
+    openSheet({
+      title: 'Choose a model',
+      body: '<p>Models you download show up here. Downloads are switched off in this preview.</p>',
+      actions: '<button type="button" class="btn primary block" data-nav="models" data-action="close-sheet">Browse models</button>',
+    });
+    return;
+  }
+  const keys = [...S.downloaded.keys()];
+  const rows = keys.map((k) => {
+    const l = keyLabel(k);
+    const active = k === S.activeKey;
+    const st = active ? (S.engine === 'ready' ? 'In use' : S.engine === 'loading' ? 'Waking up…' : S.engine === 'error' ? 'Didn’t start' : 'Selected') : '';
+    return `<button type="button" class="pick-row" data-action="pick-model" data-key="${esc(k)}" aria-pressed="${active}"><span class="radio"></span><span class="txt"><b>${esc(l.name)}</b><span>${esc(l.quant)} · ${fmtBytes(S.downloaded.get(k)?.size)}${st ? ` · ${st}` : ''}</span></span></button>`;
+  }).join('');
+  openSheet({
+    title: 'Choose a model',
+    body: keys.length ? rows : '<p>No models on this device yet. Download one to start chatting offline.</p>',
+    actions: '<button type="button" class="btn block" data-nav="models" data-action="close-sheet">' + icon('models', 'sm') + ' Get more models</button>',
+  });
+}
+
+function openGenSettings() {
+  const entry = activeEntry();
+  const canThink = entry && (entry.think === 'qwen3' || entry.think === 'smollm3');
+  openSheet({
+    title: 'Reply settings',
+    body: `<div class="field"><span class="label">Creativity</span>${segHtml('creativity', CRE_OPTS, S.settings.creativity)}</div>
+      <div class="field"><span class="label">Length</span>${segHtml('length', LEN_OPTS, S.settings.length)}</div>
+      <div class="field"><span class="label">Language</span>${segHtml('language', LANG_OPTS, S.settings.language)}</div>
+      ${canThink ? `<div class="row-setting"><div class="txt"><b>Think mode</b><span>${esc(entry.name)} reasons step by step first. Better for math and logic, slower to answer.</span></div><label class="switch"><input type="checkbox" id="sheet-think" ${S.settings.think ? 'checked' : ''}><span></span><b class="sr-only">Think mode</b></label></div>` : ''}
+      ${entry?.think === 'always' ? `<p class="device-note">${esc(entry.name)} always thinks before answering.</p>` : ''}`,
+    actions: '<button type="button" class="btn primary block" data-action="close-sheet">Done</button>',
+  });
+}
+
+/* ------------------------------------------------------------------ */
+/* Images                                                              */
+/* ------------------------------------------------------------------ */
+async function onImagePicked(file) {
+  if (!file) return;
+  try {
+    const bmp = await createImageBitmap(file);
+    const scale = Math.min(1, 896 / Math.max(bmp.width, bmp.height));
+    const c = document.createElement('canvas');
+    c.width = Math.round(bmp.width * scale);
+    c.height = Math.round(bmp.height * scale);
+    c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+    const blob = await new Promise((r) => c.toBlob(r, 'image/jpeg', 0.88));
+    const buffer = await blob.arrayBuffer();
+    const t = document.createElement('canvas');
+    const ts = Math.min(1, 320 / Math.max(c.width, c.height));
+    t.width = Math.round(c.width * ts);
+    t.height = Math.round(c.height * ts);
+    t.getContext('2d').drawImage(c, 0, 0, t.width, t.height);
+    S.pendingImage = { buffer, thumb: t.toDataURL('image/jpeg', 0.75) };
+    renderComposer();
+  } catch {
+    toast('Couldn’t read that photo.', 'risk');
+  } finally {
+    $('#image-input').value = '';
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Theme                                                               */
+/* ------------------------------------------------------------------ */
+function applyTheme() {
+  if (PREVIEW) return;
+  const t = S.settings.theme;
+  if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+  else delete document.documentElement.dataset.theme;
+  const dark = t === 'dark' || (t === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', dark ? '#0c0e16' : '#f2f3f7');
+}
+
+/* ------------------------------------------------------------------ */
+/* Clipboard                                                           */
+/* ------------------------------------------------------------------ */
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); toast('Copied.'); }
+  catch {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch { ok = false; }
+    ta.remove();
+    toast(ok ? 'Copied.' : 'Select the text and copy it manually.');
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Events                                                              */
+/* ------------------------------------------------------------------ */
+function findMsg(id) {
+  for (const c of S.convs) {
+    const i = c.messages.findIndex((m) => m.id === id);
+    if (i !== -1) return { conv: c, msg: c.messages[i], index: i };
+  }
+  return null;
+}
+
+const actions = {
+  'close-sheet': () => closeSheet(),
+  'sheet-confirm': () => { const fn = sheetHandlers.onConfirm; closeSheet(); fn?.(); },
+  'go-chat': () => go('chat'),
+  'new-chat': () => {
+    if (S.gen) stopGeneration();
+    S.currentId = null;
+    S.example = false;
+    S.pendingImage = null;
+    go('chat');
+    $('#prompt').focus();
+  },
+  'open-model-picker': () => openModelPicker(),
+  'pick-model': (el) => { closeSheet(); if (el.dataset.key !== S.activeKey || S.engine !== 'ready') activateModel(el.dataset.key); },
+  'open-gen-settings': () => openGenSettings(),
+  'set-pref': (el) => {
+    const { pref, value } = el.dataset;
+    S.settings[pref] = value;
+    saveSettings();
+    el.parentElement.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === el)));
+    if (pref === 'theme') applyTheme();
+    if (pref === 'ctx' && S.engine === 'ready' && S.activeKey) { toast('Reloading the model with the new memory size…'); Engine.unload().then(() => activateModel(S.activeKey, { quiet: true })); }
+    if (S.screen === 'you' && pref === 'ctx') renderYou();
+  },
+  'toggle-think': () => { S.settings.think = !S.settings.think; saveSettings(); renderComposer(); toast(S.settings.think ? 'Think mode on: slower, more careful answers.' : 'Think mode off.'); },
+  'attach-image': () => $('#image-input').click(),
+  'remove-image': () => { S.pendingImage = null; renderComposer(); },
+  'suggest': (el) => { $('#prompt').value = el.dataset.text; autosize(); sendPrompt(); },
+  'copy-msg': (el) => { const f = findMsg(el.dataset.id); if (f) copyText(splitThink(f.msg.content).answer || f.msg.content); },
+  'save-msg': (el) => {
+    const f = findMsg(el.dataset.id);
+    if (!f) return;
+    const existing = S.saved.findIndex((s) => s.msgId === f.msg.id);
+    if (existing !== -1) { S.saved.splice(existing, 1); toast('Removed from saved.'); }
+    else {
+      const q = [...f.conv.messages.slice(0, f.index)].reverse().find((m) => m.role === 'user');
+      S.saved.unshift({ id: uid(), msgId: f.msg.id, content: f.msg.content, question: q?.content || '', model: keyLabel(f.msg.key).name, savedAt: Date.now() });
+      toast('Saved. Find it in History → Saved answers.');
+    }
+    store.set('saved', S.saved);
+    renderThread();
+  },
+  'retry-msg': (el) => {
+    if (S.gen || PREVIEW) return;
+    const f = findMsg(el.dataset.id);
+    if (!f) return;
+    f.msg.content = ''; f.msg.reasoning = ''; f.msg.error = null; f.msg.stopped = false; f.msg.stats = null; f.msg.pending = true; f.msg.key = S.activeKey;
+    renderThread();
+    runGeneration(f.conv, f.msg);
+  },
+  'copy-code': (el) => { const pre = el.closest('.codeblock')?.querySelector('pre'); if (pre) copyText(pre.innerText); },
+  'models-tab': (el) => { S.modelsTab = el.dataset.tab; renderModels(); },
+  'filter': (el) => { S.filter = el.dataset.filter; renderModels(); },
+  'quant': (el) => { S.quant[el.dataset.entry] = Number(el.dataset.qi); renderModels(); },
+  'download': (el) => startDownload(el.dataset.entry, { confirmed: el.dataset.confirmed === '1', heavyOk: el.dataset.heavyOk === '1' }),
+  'cancel-download': () => { if (S.dl?.ctrl) S.dl.ctrl.abort(); },
+  'use-model': (el) => { activateModel(el.dataset.key); go('chat'); },
+  'delete-model': (el) => {
+    const key = el.dataset.key;
+    const l = keyLabel(key);
+    confirmSheet({
+      title: `Delete ${l.name}?`,
+      body: `This frees ${fmtBytes(S.downloaded.get(key)?.size)} on this device. You can download it again later.`,
+      confirm: 'Delete model',
+      onConfirm: async () => {
+        try {
+          if (S.activeKey === key) { S.engine = 'idle'; S.engineInfo = null; }
+          await Engine.remove(key);
+          const custom = S.customModels.find((c) => c.url === key && c.imported);
+          if (custom) { S.customModels = S.customModels.filter((c) => c !== custom); store.set('custom', S.customModels); }
+          await refreshDownloaded();
+          if (S.activeKey === key) { S.activeKey = null; store.del('activeKey'); }
+          S.device = await detectDevice();
+          toast(`${l.name} deleted.`);
+        } catch (e) { toast(`Couldn’t delete: ${String(e?.message || e).slice(0, 80)}`, 'risk'); }
+        renderModels();
+        renderChrome();
+      },
+    });
+  },
+  'remove-custom': (el) => {
+    S.customModels = S.customModels.filter((c) => c.id !== el.dataset.entry);
+    store.set('custom', S.customModels);
+    renderModels();
+    toast('Removed from your list.');
+  },
+  'add-link': () => openAddLink(),
+  'save-link': () => saveLink(),
+  'import-file': () => importFile(),
+  'history-tab': (el) => { S.historyTab = el.dataset.tab; S.historyQuery = ''; renderHistory(); },
+  'open-conv': (el) => { S.currentId = el.dataset.id; S.example = false; stickToBottom = true; go('chat'); },
+  'delete-conv': (el) => {
+    const id = el.dataset.id;
+    const c = S.convs.find((x) => x.id === id);
+    confirmSheet({
+      title: 'Delete this chat?',
+      body: `“${esc((c?.title || 'Untitled chat').slice(0, 60))}” will be removed from this device. Saved answers stay.`,
+      confirm: 'Delete chat',
+      onConfirm: () => {
+        if (S.gen?.convId === id) stopGeneration();
+        S.convs = S.convs.filter((x) => x.id !== id);
+        if (S.currentId === id) S.currentId = null;
+        saveConvs();
+        renderHistory();
+        toast('Chat deleted.');
+      },
+    });
+  },
+  'expand-saved': (el) => { const card = el.closest('.saved-card'); card.classList.toggle('is-open'); el.textContent = card.classList.contains('is-open') ? 'Show less' : 'Show all'; },
+  'copy-saved': (el) => { const s = S.saved.find((x) => x.id === el.dataset.id); if (s) copyText(splitThink(s.content).answer); },
+  'unsave': (el) => { S.saved = S.saved.filter((x) => x.id !== el.dataset.id); store.set('saved', S.saved); renderHistory(); toast('Removed from saved.'); },
+  'persist': async () => {
+    try {
+      const ok = await navigator.storage.persist();
+      S.device = await detectDevice();
+      toast(ok ? 'Your models are protected.' : `The browser said no for now. Installing ${APP.name} usually allows it.`);
+    } catch { toast('This browser can’t protect storage.'); }
+    renderYou();
+  },
+  'clear-chats': () => confirmSheet({
+    title: 'Delete all chats?', body: 'Every conversation on this device will be removed. Saved answers stay.', confirm: 'Delete all chats',
+    onConfirm: () => { if (S.gen) stopGeneration(); S.convs = []; S.currentId = null; saveConvs(); renderYou(); toast('All chats deleted.'); },
+  }),
+  'clear-models': () => confirmSheet({
+    title: 'Delete all models?', body: `This frees ${fmtBytes([...S.downloaded.values()].reduce((a, b) => a + (b.size || 0), 0))}. You’ll need internet to download them again.`, confirm: 'Delete all models',
+    onConfirm: async () => {
+      if (PREVIEW) return;
+      try {
+        if (S.gen) stopGeneration();
+        await Engine.unload();
+        await Engine.ensureLib();
+        await Engine.mm.clear();
+        S.customModels = S.customModels.filter((c) => !c.imported);
+        store.set('custom', S.customModels);
+        S.activeKey = null; store.del('activeKey');
+        S.engine = 'idle'; S.engineInfo = null;
+        await refreshDownloaded();
+        S.device = await detectDevice();
+        toast('All models deleted.');
+      } catch (e) { toast(`Couldn’t delete: ${String(e?.message || e).slice(0, 80)}`, 'risk'); }
+      renderYou(); renderChrome();
+    },
+  }),
+  'retry-load': () => {
+    closeSheet();
+    store.del('gpuFallback');
+    const key = S.activeKey && S.downloaded.has(S.activeKey) ? S.activeKey : [...S.downloaded.keys()][0];
+    if (key) activateModel(key);
+  },
+  'reset-gpu': () => { store.del('gpuFallback'); toast('GPU boost will be tried next time a model loads.'); renderYou(); },
+  'install': async () => {
+    const p = S.installPrompt;
+    if (!p) return;
+    S.installPrompt = null;
+    try { p.prompt(); await p.userChoice; } catch { /* ignore */ }
+    renderYou();
+  },
+};
+
+document.addEventListener('click', (e) => {
+  const nav = e.target.closest('[data-nav]');
+  const act = e.target.closest('[data-action]');
+  if (act && act.dataset.action && actions[act.dataset.action]) {
+    if (act.tagName === 'A') e.preventDefault();
+    actions[act.dataset.action](act, e);
+  }
+  if (nav) {
+    if (!act || act.dataset.action === 'close-sheet') closeSheet();
+    go(nav.dataset.nav);
+  }
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !$('#sheet-layer').hidden && sheetHandlers.dismissable !== false) closeSheet();
+});
+document.addEventListener('click', (e) => {
+  const sum = e.target.closest('details.think > summary');
+  const id = sum?.closest('.msg')?.dataset.id;
+  if (id) userToggled.add(id);
+}, true);
+document.addEventListener('input', (e) => {
+  const t = e.target;
+  if (t.id === 'model-search') { S.query = t.value; renderModels(); }
+  else if (t.id === 'history-search') { S.historyQuery = t.value; renderHistory(); }
+  else if (t.id === 'prompt') autosize();
+  else if (t.id === 'pf-name' || t.id === 'pf-about') {
+    S.profile[t.id === 'pf-name' ? 'name' : 'about'] = t.value;
+    store.set('profile', S.profile);
+    if (t.id === 'pf-name') {
+      const av = document.querySelector('#you-root .avatar');
+      if (av) av.textContent = (t.value || 'You').trim().split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+    }
+  }
+});
+document.addEventListener('change', (e) => {
+  const t = e.target;
+  if (t.id === 'model-sort') { S.sort = t.value; renderModels(); }
+  else if (t.id === 'pf-use') { S.settings.useProfile = t.checked; saveSettings(); }
+  else if (t.id === 'set-gpu') {
+    S.settings.gpu = t.checked;
+    saveSettings();
+    store.del('gpuFallback');
+    if (S.engine === 'ready' && S.activeKey) { toast('Reloading the model…'); Engine.unload().then(() => activateModel(S.activeKey, { quiet: true })); }
+  } else if (t.id === 'sheet-think') { S.settings.think = t.checked; saveSettings(); renderComposer(); }
+  else if (t.id === 'image-input') onImagePicked(t.files?.[0]);
+  else if (t.id === 'gguf-input') onGgufPicked(t.files);
+});
+
+const coarse = matchMedia('(pointer: coarse)').matches;
+function autosize() {
+  const ta = $('#prompt');
+  ta.style.height = 'auto';
+  ta.style.height = Math.min(168, ta.scrollHeight) + 'px';
+}
+$('#prompt').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey && !coarse && !e.isComposing) { e.preventDefault(); if (!S.gen) sendPrompt(); }
+});
+$('#composer').addEventListener('submit', (e) => {
+  e.preventDefault();
+  if (S.gen) stopGeneration();
+  else sendPrompt();
+});
+
+window.addEventListener('online', () => renderChrome());
+window.addEventListener('offline', () => renderChrome());
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  S.installPrompt = e;
+  if (S.screen === 'you') renderYou();
+});
+matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', applyTheme);
+
+/* ------------------------------------------------------------------ */
+/* Service worker (published site only)                                */
+/* ------------------------------------------------------------------ */
+function busy() { return !!(S.dl || S.gen || S.engine === 'loading'); }
+function setupServiceWorker() {
+  if (PREVIEW || TEST_ENGINE || !('serviceWorker' in navigator) || location.protocol === 'file:') return;
+  navigator.serviceWorker.register('./sw.js').then(() => {
+    if (window.crossOriginIsolated) return;
+    // The worker adds the headers that unlock multi-core speed. Reload once to pick them up.
+    const tried = store.get('coiTried', '');
+    if (tried === navigator.userAgent) return;
+    const reloadOnce = () => {
+      if (busy()) return;
+      store.set('coiTried', navigator.userAgent);
+      location.reload();
+    };
+    if (navigator.serviceWorker.controller) reloadOnce();
+    else navigator.serviceWorker.addEventListener('controllerchange', reloadOnce, { once: true });
+  }).catch(() => { /* offline support unavailable */ });
+}
+
+/* ------------------------------------------------------------------ */
+/* Boot                                                                */
+/* ------------------------------------------------------------------ */
+async function boot() {
+  applyTheme();
+  if (PREVIEW) {
+    $('#preview-banner').hidden = false;
+    S.activeKey = EXAMPLE_CHAT[1].key;
+  }
+  const start = (location.hash || '').slice(1);
+  go(SCREENS.includes(start) ? start : 'chat', { push: false });
+  S.device = await detectDevice();
+  if (S.screen === 'models') renderModels();
+  if (PREVIEW) { renderChrome(); return; }
+  setupServiceWorker();
+  try {
+    await Engine.ensureLib();
+    await refreshDownloaded();
+    S.engine = 'idle';
+  } catch {
+    S.engine = 'unavailable';
+  }
+  if (S.activeKey && !S.downloaded.has(S.activeKey)) S.activeKey = [...S.downloaded.keys()][0] || null;
+  renderChrome();
+  if (S.screen === 'chat') renderThread();
+  if (S.screen === 'models') renderModels();
+  if (S.activeKey) activateModel(S.activeKey, { quiet: true });
+}
+
+if (TEST_ENGINE) window.__APP__ = { S, Engine, go, sendPrompt, activateModel, startDownload, md, splitThink };
+boot();
+
+</script>
+</body>
+</html>
